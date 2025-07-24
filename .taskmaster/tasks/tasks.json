@@ -1,0 +1,123 @@
+{
+    "master": [
+        {
+            "id": "1",
+            "title": "项目基础架构搭建",
+            "description": "搭建前后端基础架构，包括Next.js前端和FastAPI后端",
+            "priority": "high",
+            "status": "pending",
+            "dependencies": [],
+            "details": "创建项目基础结构，配置开发环境，建立前后端通信机制",
+            "testStrategy": "确保前后端能够正常通信，API接口可以正常访问"
+        },
+        {
+            "id": "2",
+            "title": "视频上传功能实现",
+            "description": "实现本地视频上传和视频链接解析功能",
+            "priority": "high",
+            "status": "pending",
+            "dependencies": [
+                "1"
+            ],
+            "details": "支持拖拽上传、文件格式验证、大小限制检查、进度显示等功能",
+            "testStrategy": "测试各种格式视频上传，验证文件大小限制和格式检查"
+        },
+        {
+            "id": "3",
+            "title": "视频处理模块开发",
+            "description": "集成FFmpeg进行视频处理，包括音频提取和关键帧抽取",
+            "priority": "high",
+            "status": "pending",
+            "dependencies": [
+                "2"
+            ],
+            "details": "使用FFmpeg提取音频文件，按时间间隔或场景变化抽取关键帧",
+            "testStrategy": "测试不同格式视频的音频提取和帧抽取效果"
+        },
+        {
+            "id": "4",
+            "title": "语音识别服务集成",
+            "description": "集成Whisper等语音识别服务，实现音频转文字功能",
+            "priority": "high",
+            "status": "pending",
+            "dependencies": [
+                "3"
+            ],
+            "details": "接入Whisper API，添加时间戳，实现段落分割和多语言支持",
+            "testStrategy": "测试中英文等多语言语音识别准确率和时间戳精度"
+        },
+        {
+            "id": "5",
+            "title": "图像识别功能开发",
+            "description": "实现关键帧的OCR识别和场景描述功能",
+            "priority": "medium",
+            "status": "pending",
+            "dependencies": [
+                "3"
+            ],
+            "details": "集成OCR服务识别图像中的文字，使用视觉AI生成场景描述",
+            "testStrategy": "测试OCR识别准确率和场景描述的相关性"
+        },
+        {
+            "id": "6",
+            "title": "AI摘要生成服务",
+            "description": "集成大语言模型实现智能摘要和内容结构化",
+            "priority": "high",
+            "status": "pending",
+            "dependencies": [
+                "4",
+                "5"
+            ],
+            "details": "使用GPT-4或Claude等模型生成内容摘要，实现章节划分和关键词提取",
+            "testStrategy": "评估摘要质量和结构化效果，测试不同长度视频的处理能力"
+        },
+        {
+            "id": "7",
+            "title": "多格式输出功能",
+            "description": "实现Markdown、PDF、HTML等多种格式的文档导出",
+            "priority": "medium",
+            "status": "pending",
+            "dependencies": [
+                "6"
+            ],
+            "details": "支持Markdown、PDF、HTML、TXT格式导出，包含图片和格式化内容",
+            "testStrategy": "测试各种导出格式的完整性和兼容性"
+        },
+        {
+            "id": "8",
+            "title": "用户界面设计与开发",
+            "description": "设计并实现现代化的Web用户界面",
+            "priority": "medium",
+            "status": "pending",
+            "dependencies": [
+                "1"
+            ],
+            "details": "使用Next.js + Tailwind CSS创建响应式界面，包含上传、进度显示、结果展示等功能",
+            "testStrategy": "测试界面在不同设备和浏览器上的兼容性和用户体验"
+        },
+        {
+            "id": "9",
+            "title": "文件存储系统",
+            "description": "实现文件上传存储和管理系统",
+            "priority": "medium",
+            "status": "pending",
+            "dependencies": [
+                "2"
+            ],
+            "details": "集成云存储服务(S3/Supabase)，实现文件上传、下载和管理功能",
+            "testStrategy": "测试文件上传下载的稳定性和安全性"
+        },
+        {
+            "id": "10",
+            "title": "任务队列系统",
+            "description": "实现异步任务处理机制",
+            "priority": "medium",
+            "status": "pending",
+            "dependencies": [
+                "3"
+            ],
+            "details": "使用Celery+Redis实现视频处理的异步任务队列，支持并发处理",
+            "testStrategy": "测试并发任务处理能力和任务状态跟踪"
+        }
+    ]
+}
