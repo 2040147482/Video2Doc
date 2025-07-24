@@ -1,67 +1,172 @@
-import { VideoUpload } from '@/components/VideoUpload'
-import { Header } from '@/components/Header'
-import { Footer } from '@/components/Footer'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+import VideoUpload from '@/components/VideoUpload'
 
 export default function Home() {
     return (
-        <main className="min-h-screen flex flex-col">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
             <Header />
 
-            <div className="flex-1 container mx-auto px-4 py-8">
-                <div className="max-w-4xl mx-auto">
-                    {/* 页面标题 */}
-                    <div className="text-center mb-12">
-                        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                            Video2Doc
-                        </h1>
-                        <p className="text-xl text-gray-600 mb-8">
-                            AI 视频内容分析工具
-                        </p>
-                        <p className="text-gray-500 max-w-2xl mx-auto">
-                            上传视频或粘贴视频链接，AI 自动识别语音与图像内容，
-                            生成结构化文档，支持 Markdown、PDF、HTML 等格式导出
-                        </p>
-                    </div>
-
-                    {/* 视频上传组件 */}
-                    <VideoUpload />
+            <main className="container mx-auto px-4 py-8">
+                {/* 产品介绍 */}
+                <div className="text-center mb-12">
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                        AI 视频内容
+                        <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                            智能分析
+                        </span>
+                    </h1>
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+                        上传视频或提供视频链接，AI 自动识别语音与图像内容，
+                        生成结构化文档，支持 Markdown、PDF、HTML 等多种格式导出
+                    </p>
 
                     {/* 功能特点 */}
-                    <div className="mt-16 grid md:grid-cols-3 gap-8">
-                        <div className="text-center p-6 bg-white rounded-lg shadow-sm">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+                        <div className="bg-white rounded-lg p-6 shadow-md">
                             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                                 <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 011 1v1a1 1 0 01-1 1h-1v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7H3a1 1 0 01-1-1V5a1 1 0 011-1h4z" />
                                 </svg>
                             </div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">智能识别</h3>
-                            <p className="text-gray-600">支持语音转文字、图像OCR识别，自动提取视频中的所有内容</p>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">智能语音识别</h3>
+                            <p className="text-gray-600 text-sm">
+                                支持多语言语音转文字，自动添加时间戳，按段落智能分割
+                            </p>
                         </div>
 
-                        <div className="text-center p-6 bg-white rounded-lg shadow-sm">
+                        <div className="bg-white rounded-lg p-6 shadow-md">
                             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                                 <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">结构化整理</h3>
-                            <p className="text-gray-600">AI 自动生成摘要、章节划分，形成条理清晰的文档结构</p>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">图像内容分析</h3>
+                            <p className="text-gray-600 text-sm">
+                                提取关键帧，OCR文字识别，图文内容智能匹配
+                            </p>
                         </div>
 
-                        <div className="text-center p-6 bg-white rounded-lg shadow-sm">
+                        <div className="bg-white rounded-lg p-6 shadow-md">
                             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                                 <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                             </div>
                             <h3 className="text-lg font-semibold text-gray-900 mb-2">多格式导出</h3>
-                            <p className="text-gray-600">支持 Markdown、PDF、HTML 等多种格式，适配各种笔记工具</p>
+                            <p className="text-gray-600 text-sm">
+                                支持 Markdown、PDF、HTML、TXT 等格式，一键批量导出
+                            </p>
                         </div>
                     </div>
                 </div>
-            </div>
+
+                {/* 上传组件 */}
+                <VideoUpload />
+
+                {/* 使用说明 */}
+                <div className="mt-16 max-w-4xl mx-auto">
+                    <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
+                        如何使用
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span className="text-2xl font-bold text-blue-600">1</span>
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">上传视频</h3>
+                            <p className="text-gray-600">
+                                支持本地文件上传或粘贴视频链接，
+                                兼容主流视频平台和格式
+                            </p>
+                        </div>
+
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span className="text-2xl font-bold text-green-600">2</span>
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">AI 分析</h3>
+                            <p className="text-gray-600">
+                                自动识别语音内容，提取关键图像，
+                                生成结构化摘要和章节
+                            </p>
+                        </div>
+
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span className="text-2xl font-bold text-purple-600">3</span>
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">导出文档</h3>
+                            <p className="text-gray-600">
+                                选择所需格式，一键下载整理好的
+                                文档，支持在线预览和编辑
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 支持的平台 */}
+                <div className="mt-16 bg-white rounded-xl shadow-lg p-8 max-w-4xl mx-auto">
+                    <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
+                        支持的平台和格式
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                </svg>
+                                视频平台
+                            </h3>
+                            <ul className="space-y-2">
+                                <li className="flex items-center text-gray-600">
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                                    YouTube (youtube.com, youtu.be)
+                                </li>
+                                <li className="flex items-center text-gray-600">
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                                    哔哩哔哩 (bilibili.com, b23.tv)
+                                </li>
+                                <li className="flex items-center text-gray-600">
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                                    Vimeo (vimeo.com)
+                                </li>
+                                <li className="flex items-center text-gray-600">
+                                    <div className="w-2 h-2 bg-gray-400 rounded-full mr-3"></div>
+                                    更多平台持续添加...
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                文件格式
+                            </h3>
+                            <div className="space-y-3">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-700 mb-1">视频格式</p>
+                                    <p className="text-gray-600 text-sm">MP4、MOV、AVI、MKV、WEBM、FLV、WMV</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-700 mb-1">输出格式</p>
+                                    <p className="text-gray-600 text-sm">Markdown、PDF、HTML、TXT、ZIP 打包</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-700 mb-1">文件大小</p>
+                                    <p className="text-gray-600 text-sm">最大支持 2GB 视频文件</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
 
             <Footer />
-        </main>
+        </div>
     )
 } 

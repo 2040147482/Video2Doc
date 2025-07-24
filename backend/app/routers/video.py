@@ -15,6 +15,8 @@ from app.exceptions import (
     TaskNotFoundError,
     InvalidVideoUrlError
 )
+from app.services.file_service import file_service
+from app.services.video_service import video_service
 import uuid
 from datetime import datetime
 from typing import Optional
@@ -27,32 +29,6 @@ SUPPORTED_VIDEO_FORMATS = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".flv", ".wm
 
 # 临时存储任务状态（生产环境应使用数据库）
 tasks_storage = {}
-
-
-def validate_video_file(file: UploadFile, max_size: int) -> None:
-    """验证上传的视频文件"""
-    if not file.filename:
-        raise FileUploadError("文件名不能为空")
-    
-    # 检查文件扩展名
-    file_ext = os.path.splitext(file.filename.lower())[1]
-    if file_ext not in SUPPORTED_VIDEO_FORMATS:
-        raise UnsupportedFileFormatError(file_ext)
-    
-    # 检查文件大小（这里只是基本检查，实际大小需要在读取时验证）
-    if hasattr(file, 'size') and file.size and file.size > max_size:
-        raise FileSizeExceededError(file.size, max_size)
-
-
-def validate_video_url(url: str) -> None:
-    """验证视频URL"""
-    if not url or not url.strip():
-        raise InvalidVideoUrlError("视频链接不能为空")
-    
-    # 基本URL格式验证
-    supported_domains = ["youtube.com", "youtu.be", "bilibili.com", "vimeo.com"]
-    if not any(domain in url.lower() for domain in supported_domains):
-        raise InvalidVideoUrlError(f"暂不支持该视频平台: {url}")
 
 
 def create_task(task_type: str, **kwargs) -> str:
@@ -75,12 +51,28 @@ def create_task(task_type: str, **kwargs) -> str:
     return task_id
 
 
-def estimate_processing_time(video_duration: Optional[int] = None) -> int:
+def estimate_processing_time(
+    task_type: str,
+    file_size: Optional[int] = None,
+    video_duration: Optional[int] = None,
+    platform: Optional[str] = None
+) -> int:
     """估算处理时间（秒）"""
-    if video_duration:
-        # 基于视频时长估算，通常为视频时长的30-50%
-        return max(60, int(video_duration * 0.4))
-    return 300  # 默认5分钟
+    base_time = 60  # 基础时间1分钟
+    
+    if task_type == "file_upload" and file_size:
+        # 基于文件大小估算：每100MB约需30秒
+        size_factor = file_size / (100 * 1024 * 1024)  # 转换为100MB单位
+        file_time = int(size_factor * 30)
+        return max(base_time, file_time)
+    
+    elif task_type == "url_process":
+        if platform:
+            download_time = video_service.estimate_download_time(platform, video_duration)
+            process_time = int(video_duration * 0.3) if video_duration else 120
+            return download_time + process_time
+    
+    return base_time + (int(video_duration * 0.4) if video_duration else 180)
 
 
 @router.post("/upload", response_model=VideoProcessResponse, summary="上传视频文件")
@@ -98,30 +90,49 @@ async def upload_video_file(
     - **output_formats**: 输出格式，多个格式用逗号分隔
     """
     try:
-        # 验证文件
-        validate_video_file(file, settings.max_file_size)
+        # 验证文件基本信息
+        if not file.filename:
+            raise FileUploadError("文件名不能为空")
         
-        # 创建任务
+        # 验证文件格式
+        file_service.validate_file_format(file.filename, SUPPORTED_VIDEO_FORMATS)
+        
+        # 创建任务ID
         task_id = create_task(
             task_type="file_upload",
             filename=file.filename,
             language=language,
-            output_formats=output_formats.split(",")
+            output_formats=output_formats.split(","),
+            content_type=file.content_type
         )
         
-        # 估算处理时间
-        estimated_time = estimate_processing_time()
-        
-        # 这里应该启动异步处理任务（Celery）
-        # 现在只是模拟
-        
-        return VideoProcessResponse(
-            task_id=task_id,
-            status=TaskStatus.PENDING,
-            message="文件上传成功，开始处理",
-            estimated_time=estimated_time
-        )
-        
+        # 保存文件
+        try:
+            file_path, file_info = await file_service.save_upload_file(file, task_id)
+            
+            # 更新任务信息
+            tasks_storage[task_id].update({
+                "file_path": str(file_path),
+                "file_info": file_info,
+                "message": "文件上传成功，开始处理"
+            })
+            
+            # 估算处理时间
+            estimated_time = estimate_processing_time("file_upload", file_info["size"])
+            
+            return VideoProcessResponse(
+                task_id=task_id,
+                status=TaskStatus.PENDING,
+                message="文件上传成功，开始处理",
+                estimated_time=estimated_time
+            )
+            
+        except (FileSizeExceededError, UnsupportedFileFormatError):
+            # 清理失败的任务记录
+            if task_id in tasks_storage:
+                del tasks_storage[task_id]
+            raise
+            
     except (FileUploadError, FileSizeExceededError, UnsupportedFileFormatError):
         raise
     except Exception as e:
@@ -137,33 +148,51 @@ async def process_video_url(
     处理视频链接
     
     支持的平台：
-    - YouTube
-    - 哔哩哔哩
-    - Vimeo
+    - YouTube (youtube.com, youtu.be)
+    - 哔哩哔哩 (bilibili.com, b23.tv)
+    - Vimeo (vimeo.com)
     """
     try:
         if not request.video_url:
             raise InvalidVideoUrlError("视频链接不能为空")
         
-        # 验证URL
-        validate_video_url(str(request.video_url))
+        url = str(request.video_url)
+        
+        # 验证并获取视频信息
+        try:
+            video_info = await video_service.get_video_info(url)
+        except InvalidVideoUrlError:
+            raise
+        except Exception as e:
+            raise InvalidVideoUrlError(f"获取视频信息失败: {str(e)}")
         
         # 创建任务
         task_id = create_task(
             task_type="url_process",
-            video_url=str(request.video_url),
-            video_name=request.video_name,
+            video_url=url,
+            video_name=request.video_name or video_info.get("title", "未知视频"),
             language=request.language,
-            output_formats=[fmt.value for fmt in request.output_formats]
+            output_formats=[fmt.value for fmt in request.output_formats],
+            video_info=video_info
         )
         
         # 估算处理时间
-        estimated_time = estimate_processing_time()
+        estimated_time = estimate_processing_time(
+            "url_process",
+            video_duration=video_info.get("duration"),
+            platform=video_info.get("platform")
+        )
+        
+        # 更新任务状态
+        tasks_storage[task_id].update({
+            "message": f"视频链接解析成功，来自 {video_info.get('platform', '未知平台')}",
+            "estimated_time": estimated_time
+        })
         
         return VideoProcessResponse(
             task_id=task_id,
             status=TaskStatus.PENDING,
-            message="视频链接接收成功，开始处理",
+            message=f"视频链接解析成功: {video_info.get('title', '未知视频')}",
             estimated_time=estimated_time
         )
         
@@ -199,7 +228,7 @@ async def get_task_status(task_id: str) -> TaskStatusResponse:
 
 @router.get("/tasks", response_model=list[TaskStatusResponse], summary="获取所有任务")
 async def get_all_tasks() -> list[TaskStatusResponse]:
-    """获取所有任务状态"""
+    """获取所有任务状态（按创建时间倒序）"""
     tasks = []
     for task_data in tasks_storage.values():
         tasks.append(TaskStatusResponse(
@@ -213,4 +242,35 @@ async def get_all_tasks() -> list[TaskStatusResponse]:
             error_details=task_data["error_details"]
         ))
     
-    return sorted(tasks, key=lambda x: x.created_at, reverse=True) 
+    return sorted(tasks, key=lambda x: x.created_at, reverse=True)
+
+
+@router.delete("/tasks/{task_id}", summary="删除任务")
+async def delete_task(task_id: str) -> dict:
+    """删除指定任务及其相关文件"""
+    if task_id not in tasks_storage:
+        raise TaskNotFoundError(task_id)
+    
+    task_data = tasks_storage[task_id]
+    
+    # 如果是文件上传任务，删除相关文件
+    if task_data.get("task_type") == "file_upload" and task_data.get("file_path"):
+        from pathlib import Path
+        file_path = Path(task_data["file_path"])
+        await file_service.delete_file(file_path)
+    
+    # 删除任务记录
+    del tasks_storage[task_id]
+    
+    return {"message": f"任务 {task_id} 已删除"}
+
+
+@router.get("/supported-formats", summary="获取支持的文件格式")
+async def get_supported_formats() -> dict:
+    """获取支持的视频文件格式和平台"""
+    return {
+        "video_formats": list(SUPPORTED_VIDEO_FORMATS),
+        "video_platforms": list(video_service.SUPPORTED_PLATFORMS.keys()),
+        "max_file_size": get_settings().max_file_size,
+        "max_file_size_mb": get_settings().max_file_size // (1024 * 1024)
+    } 

@@ -10,7 +10,7 @@ pydantic-settings==2.7.0
 httpx==0.28.1
 requests==2.32.3
 
-# 文件处理
+# 文件处理 - 重要：包含aiofiles
 python-multipart==0.0.17
 aiofiles==24.1.0
 
@@ -21,7 +21,7 @@ ffmpeg-python==0.2.0
 openai==1.58.1
 anthropic==0.40.0
 
-# 语音识别
+# 语音识别 - 暂时注释掉有问题的包
 openai-whisper==20240930
 
 # 图像处理

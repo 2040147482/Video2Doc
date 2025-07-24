@@ -1,12 +1,11 @@
 from pydantic_settings import BaseSettings
+from functools import lru_cache
 from typing import List
 import os
 
 
 class Settings(BaseSettings):
-    """应用配置设置"""
-    
-    # 应用基础配置
+    # 应用基本配置
     app_name: str = "Video2Doc API"
     app_version: str = "1.0.0"
     debug: bool = False
@@ -15,58 +14,48 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
     
-    # 跨域配置
-    cors_origins: List[str] = ["http://localhost:3000"]
+    # CORS配置
+    cors_origins: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
     
     # 数据库配置
-    database_url: str = "sqlite:///./video2doc.db"
+    database_url: str = "postgresql://user:password@localhost/video2doc"
     redis_url: str = "redis://localhost:6379"
     
-    # 文件上传配置
+    # 文件存储配置
+    upload_folder: str = "uploads"
+    temp_folder: str = "temp"
     max_file_size: int = 2 * 1024 * 1024 * 1024  # 2GB
-    upload_folder: str = "./uploads"
-    temp_folder: str = "./temp"
     
-    # AI服务配置
+    # AI服务API Keys
     openai_api_key: str = ""
     anthropic_api_key: str = ""
     google_api_key: str = ""
-    deepgram_api_key: str = ""
+    perplexity_api_key: str = ""
     
-    # 腾讯云配置
-    tencent_secret_id: str = ""
-    tencent_secret_key: str = ""
-    
-    # 文件存储配置
+    # 云存储配置（可选）
     aws_access_key_id: str = ""
     aws_secret_access_key: str = ""
-    aws_bucket_name: str = ""
     aws_region: str = "us-east-1"
-    
-    # Supabase配置
-    supabase_url: str = ""
-    supabase_anon_key: str = ""
+    aws_s3_bucket: str = ""
     
     # Celery配置
     celery_broker_url: str = "redis://localhost:6379/0"
     celery_result_backend: str = "redis://localhost:6379/0"
     
-    # FFmpeg配置
+    # FFmpeg路径
     ffmpeg_path: str = "ffmpeg"
-    ffprobe_path: str = "ffprobe"
     
-    # JWT配置
-    secret_key: str = "your-secret-key-change-in-production"
-    algorithm: str = "HS256"
-    access_token_expire_minutes: int = 30
+    # 日志配置
+    log_level: str = "INFO"
     
     class Config:
         env_file = ".env"
         case_sensitive = False
 
 
+@lru_cache()
 def get_settings() -> Settings:
-    """获取应用配置单例"""
+    """获取配置实例（单例模式）"""
     return Settings()
 
 

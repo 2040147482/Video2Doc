@@ -31,6 +31,10 @@ build/
 *.pytest_cache/
 *.tox/
 *.envrc
+venv/
+env/
+.venv/
+.env/
 
 # === 环境变量/密钥 ===
 .env
