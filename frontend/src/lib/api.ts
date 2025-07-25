@@ -35,39 +35,6 @@ apiClient.interceptors.response.use(
     }
 )
 
-// 类型定义
-export interface VideoUploadRequest {
-    video_url?: string
-    video_name?: string
-    language?: string
-    output_formats?: string[]
-}
-
-export interface VideoProcessResponse {
-    task_id: string
-    status: string
-    message: string
-    estimated_time?: number
-}
-
-export interface TaskStatusResponse {
-    task_id: string
-    status: string
-    progress: number
-    message: string
-    created_at: string
-    updated_at: string
-    result_urls?: string[]
-    error_details?: string
-}
-
-export interface SupportedFormatsResponse {
-    video_formats: string[]
-    video_platforms: string[]
-    max_file_size: number
-    max_file_size_mb: number
-}
-
 // API方法
 export const api = {
     // 健康检查
@@ -133,4 +100,35 @@ export const api = {
     },
 }
 
-export default api 
+// 类型定义
+export interface VideoUploadRequest {
+    video_url?: string
+    video_name?: string
+    language?: string
+    output_formats?: string[]
+}
+
+export interface VideoProcessResponse {
+    task_id: string
+    status: string
+    message: string
+    estimated_time?: number
+}
+
+export interface TaskStatusResponse {
+    task_id: string
+    status: string
+    progress: number
+    message: string
+    created_at: string
+    updated_at: string
+    result_urls?: string[]
+    error_details?: string
+}
+
+export interface SupportedFormatsResponse {
+    video_formats: string[]
+    video_platforms: string[]
+    max_file_size: number
+    max_file_size_mb: number
+} 

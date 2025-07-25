@@ -13,13 +13,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { api, VideoProcessResponse, TaskStatusResponse, SupportedFormatsResponse } from '@/lib/api'
 
-interface UploadProgress {
-    percent: number
-    stage: 'uploading' | 'processing' | 'completed' | 'error'
-    message: string
-}
-
-const VideoUpload: React.FC = () => {
+export default function VideoUpload() {
     // 状态管理
     const [uploadMode, setUploadMode] = useState<'file' | 'url'>('file')
     const [videoUrl, setVideoUrl] = useState('')
@@ -233,8 +227,8 @@ const VideoUpload: React.FC = () => {
                 <button
                     onClick={() => setUploadMode('file')}
                     className={`flex-1 py-4 px-6 text-center font-medium transition-colors ${uploadMode === 'file'
-                            ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600'
-                            : 'text-gray-600 hover:text-gray-800'
+                        ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600'
+                        : 'text-gray-600 hover:text-gray-800'
                         }`}
                 >
                     <CloudArrowUpIcon className="w-5 h-5 inline-block mr-2" />
@@ -243,8 +237,8 @@ const VideoUpload: React.FC = () => {
                 <button
                     onClick={() => setUploadMode('url')}
                     className={`flex-1 py-4 px-6 text-center font-medium transition-colors ${uploadMode === 'url'
-                            ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600'
-                            : 'text-gray-600 hover:text-gray-800'
+                        ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600'
+                        : 'text-gray-600 hover:text-gray-800'
                         }`}
                 >
                     <LinkIcon className="w-5 h-5 inline-block mr-2" />
@@ -312,8 +306,8 @@ const VideoUpload: React.FC = () => {
                     <div
                         {...getRootProps()}
                         className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive
-                                ? 'border-blue-400 bg-blue-50'
-                                : 'border-gray-300 hover:border-gray-400'
+                            ? 'border-blue-400 bg-blue-50'
+                            : 'border-gray-300 hover:border-gray-400'
                             } ${isUploading ? 'pointer-events-none opacity-50' : ''}`}
                     >
                         <input {...getInputProps()} />
@@ -443,4 +437,9 @@ const VideoUpload: React.FC = () => {
     )
 }
 
-export default VideoUpload 
+// 类型定义
+interface UploadProgress {
+    percent: number
+    stage: 'uploading' | 'processing' | 'completed' | 'error'
+    message: string
+} 
