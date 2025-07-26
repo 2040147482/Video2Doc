@@ -1,141 +1,154 @@
+"""
+Video2Doc 主应用入口
+"""
+
+import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
-import uvicorn
-import os
-from datetime import datetime
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
-# 导入应用模块
-from app.config import settings
-from app.routers import health, video
+from app.config import get_settings
 from app.exceptions import create_error_response
-from app.models import ErrorResponse
+from app.routers import health, video
+# 导入新的处理路由
+from app.routers import processing
 
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
 
+# 应用生命周期管理
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """应用生命周期管理"""
-    # 启动时执行
-    print(f"🚀 {settings.app_name} v{settings.app_version} 正在启动...")
+    """
+    应用生命周期管理
+    
+    Args:
+        app: FastAPI应用实例
+    """
+    # 启动前执行
+    settings = get_settings()
+    logger.info(f"应用启动: {settings.app_name} v{settings.app_version}")
     
     # 创建必要的目录
-    os.makedirs(settings.upload_folder, exist_ok=True)
-    os.makedirs(settings.temp_folder, exist_ok=True)
-    
-    print(f"📁 上传目录: {settings.upload_folder}")
-    print(f"📁 临时目录: {settings.temp_folder}")
-    print(f"🌐 CORS 允许的源: {settings.cors_origins}")
+    from pathlib import Path
+    Path(settings.upload_dir).mkdir(exist_ok=True, parents=True)
+    Path(settings.temp_dir).mkdir(exist_ok=True, parents=True)
+    Path(settings.results_dir).mkdir(exist_ok=True, parents=True)
     
     yield
     
     # 关闭时执行
-    print(f"🛑 {settings.app_name} 正在关闭...")
+    logger.info("应用关闭")
 
+# 创建应用
+app = FastAPI(
+    title="Video2Doc API",
+    description="视频内容AI分析工具API",
+    version="0.1.0",
+    lifespan=lifespan,
+)
 
-# 创建FastAPI应用实例
-def create_app() -> FastAPI:
-    """创建并配置FastAPI应用"""
-    
-    app = FastAPI(
-        title=settings.app_name,
-        description="一个在线AI工具平台，用户上传视频或粘贴视频链接后，AI自动识别视频中的语音与图像内容，并将其结构化生成为可编辑、可导出的文档格式",
-        version=settings.app_version,
-        docs_url="/docs",
-        redoc_url="/redoc",
-        openapi_url="/openapi.json",
-        lifespan=lifespan,
-        debug=settings.debug
-    )
-    
-    # 配置CORS中间件
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=settings.cors_origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-    
-    # 注册路由
-    app.include_router(health.router)
-    app.include_router(video.router)
-    
-    return app
-
-
-# 创建应用实例
-app = create_app()
-
-
-# 全局异常处理器
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """处理请求验证异常"""
-    return JSONResponse(
-        status_code=422,
-        content=create_error_response(
-            error_type="validation_error",
-            message="请求参数验证失败",
-            details=str(exc)
-        )
-    )
-
-
-@app.exception_handler(404)
-async def not_found_handler(request: Request, exc):
-    """处理404错误"""
-    return JSONResponse(
-        status_code=404,
-        content=create_error_response(
-            error_type="not_found",
-            message="请求的资源不存在",
-            details=f"路径 {request.url.path} 未找到"
-        )
-    )
-
-
-@app.exception_handler(500)
-async def internal_error_handler(request: Request, exc):
-    """处理500错误"""
-    return JSONResponse(
-        status_code=500,
-        content=create_error_response(
-            error_type="internal_error",
-            message="服务器内部错误",
-            details="请稍后重试或联系技术支持"
-        )
-    )
-
-
-# 中间件：请求日志
+# 请求日志中间件
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    """记录请求日志"""
-    start_time = datetime.now()
+    """
+    请求日志中间件
     
-    # 处理请求
+    Args:
+        request: 请求对象
+        call_next: 下一个处理函数
+        
+    Returns:
+        响应对象
+    """
+    logger.info(f"{request.method} {request.url.path}")
     response = await call_next(request)
-    
-    # 计算处理时间
-    process_time = (datetime.now() - start_time).total_seconds()
-    
-    # 记录日志（生产环境应使用专业的日志库）
-    if settings.debug:
-        print(f"📝 {request.method} {request.url.path} - {response.status_code} - {process_time:.3f}s")
-    
-    # 添加处理时间到响应头
-    response.headers["X-Process-Time"] = str(process_time)
-    
+    logger.info(f"{request.method} {request.url.path} - {response.status_code}")
     return response
 
+# 配置CORS
+settings = get_settings()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+# 注册路由
+app.include_router(health.router)
+app.include_router(video.router)
+# 添加新的处理路由
+app.include_router(processing.router)
+
+# 全局异常处理
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    """
+    请求验证异常处理
+    
+    Args:
+        request: 请求对象
+        exc: 异常对象
+        
+    Returns:
+        错误响应
+    """
+    return create_error_response(
+        status_code=422,
+        message="请求参数验证失败",
+        details=[{"loc": err["loc"], "msg": err["msg"]} for err in exc.errors()]
+    )
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request, exc):
+    """
+    HTTP异常处理
+    
+    Args:
+        request: 请求对象
+        exc: 异常对象
+        
+    Returns:
+        错误响应
+    """
+    return create_error_response(
+        status_code=exc.status_code,
+        message=exc.detail
+    )
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request, exc):
+    """
+    通用异常处理
+    
+    Args:
+        request: 请求对象
+        exc: 异常对象
+        
+    Returns:
+        错误响应
+    """
+    logger.error(f"未处理的异常: {str(exc)}", exc_info=True)
+    return create_error_response(
+        status_code=500,
+        message="服务器内部错误"
+    )
+
+# 直接运行应用（开发环境）
 if __name__ == "__main__":
+    import uvicorn
+    
     uvicorn.run(
         "main:app",
         host=settings.host,
         port=settings.port,
-        reload=settings.debug,
-        log_level="info" if not settings.debug else "debug"
+        reload=settings.debug
     ) 
