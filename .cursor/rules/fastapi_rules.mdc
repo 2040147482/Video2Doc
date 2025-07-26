@@ -64,5 +64,12 @@ alwaysApply: true
      - Use dedicated async functions for database and external API operations.
      - Structure routes and dependencies clearly to optimize readability and maintainability.
   
+  Virtual Environment Management
+  - Always use project virtual environment located at backend/venv/
+  - Ensure Cursor uses the correct Python interpreter from the virtual environment
+  - Install all dependencies in the virtual environment, not globally
+  - Use requirements.txt for dependency management
+  - Activate virtual environment before running any Python scripts
+  
   Refer to FastAPI documentation for Data Models, Path Operations, and Middleware for best practices.
   
