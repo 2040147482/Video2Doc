@@ -19,7 +19,7 @@ from app.config import Settings, get_settings
 logger = logging.getLogger(__name__)
 
 # 创建路由
-router = APIRouter(prefix="/api/speech", tags=["speech"])
+router = APIRouter(prefix="/speech", tags=["speech"])
 
 # 模型定义
 class TranscriptionRequest(BaseModel):

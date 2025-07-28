@@ -18,6 +18,8 @@ from app.routers import processing
 from app.routers import speech
 # 导入简化的语音识别路由（用于调试）
 from app.routers import speech_simple
+# 导入超级简化的语音识别路由（用于诊断）
+from app.routers import speech_ultra_simple
 
 # 配置日志
 logging.basicConfig(
@@ -95,6 +97,8 @@ app.include_router(processing.router, prefix="/api")
 app.include_router(speech.router, prefix="/api")
 # 添加简化的语音识别路由（用于调试）
 app.include_router(speech_simple.router, prefix="/api")
+# 添加超级简化的语音识别路由（用于诊断）
+app.include_router(speech_ultra_simple.router, prefix="/api")
 
 # 全局异常处理
 @app.exception_handler(RequestValidationError)

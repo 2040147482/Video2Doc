@@ -24,7 +24,7 @@ from app.config import Settings, get_settings
 logger = logging.getLogger(__name__)
 
 # 创建路由
-router = APIRouter(prefix="/api/processing", tags=["processing"])
+router = APIRouter(prefix="/processing", tags=["processing"])
 
 @router.post("/start", response_model=ProcessingStatusResponse)
 async def start_processing(

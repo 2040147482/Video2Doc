@@ -18,7 +18,7 @@ from app.config import Settings, get_settings
 logger = logging.getLogger(__name__)
 
 # 创建路由
-router = APIRouter(prefix="/api/speech-simple", tags=["speech-simple"])
+router = APIRouter(prefix="/speech-simple", tags=["speech-simple"])
 
 # 模型定义
 class SimpleTranscriptionResponse(BaseModel):
