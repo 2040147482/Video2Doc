@@ -1,0 +1,103 @@
+{
+  "task_id": "image_analysis_f6b6e487fb7247d1855e771bfde937d4",
+  "type": "image_analysis",
+  "status": "failed",
+  "progress": 0.0,
+  "file_path": "uploads\\20250728\\image_analysis_f6b6e487fb7247d1855e771bfde937d4.jpg",
+  "file_info": {
+    "original_name": "test.jpg",
+    "size": 1022,
+    "content_type": "image/jpeg",
+    "md5": "134f287973a87d204f56c674f29e6fe2",
+    "saved_path": "uploads\\20250728\\image_analysis_f6b6e487fb7247d1855e771bfde937d4.jpg"
+  },
+  "analysis_options": {
+    "enable_ocr": true,
+    "enable_scene_analysis": true,
+    "enable_object_detection": true,
+    "language": "auto",
+    "detail_level": "medium"
+  },
+  "created_at": "2025-07-28T18:01:50.173461",
+  "updated_at": "2025-07-28T18:01:51.386212",
+  "result": {
+    "frame_timestamp": 144.0,
+    "frame_path": "uploads\\20250728\\image_analysis_f6b6e487fb7247d1855e771bfde937d4.jpg",
+    "ocr_results": [
+      {
+        "text": "这是一段模拟的OCR文本",
+        "confidence": 0.99,
+        "bounding_box": {
+          "x": 10,
+          "y": 10,
+          "width": 200,
+          "height": 30
+        },
+        "language": "zh-cn"
+      }
+    ],
+    "extracted_text": "这是一段模拟的OCR文本",
+    "scene_analysis": {
+      "description": "户外自然风景，包含树木和天空",
+      "confidence": 0.9600000000000001,
+      "tags": [
+        "自然",
+        "户外",
+        "风景",
+        "植物"
+      ],
+      "colors": [
+        "蓝色",
+        "白色",
+        "灰色"
+      ],
+      "composition": "三分构图"
+    },
+    "objects": [
+      {
+        "label": "screen",
+        "confidence": 0.82,
+        "bounding_box": {
+          "x": 10,
+          "y": 10,
+          "width": 116,
+          "height": 77
+        }
+      },
+      {
+        "label": "chair",
+        "confidence": 0.96,
+        "bounding_box": {
+          "x": 60,
+          "y": 50,
+          "width": 97,
+          "height": 95
+        }
+      },
+      {
+        "label": "phone",
+        "confidence": 0.97,
+        "bounding_box": {
+          "x": 110,
+          "y": 90,
+          "width": 115,
+          "height": 83
+        }
+      },
+      {
+        "label": "car",
+        "confidence": 0.75,
+        "bounding_box": {
+          "x": 160,
+          "y": 130,
+          "width": 103,
+          "height": 90
+        }
+      }
+    ],
+    "processing_time": 1.2087442874908447,
+    "model_used": "MockImageRecognition",
+    "error": null
+  },
+  "message": "'QueueService' object has no attribute 'update_task'"
+}

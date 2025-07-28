@@ -1,0 +1,84 @@
+{
+  "task_id": "image_analysis_7c8ab0602d224d6fb55285fdce5374d4",
+  "type": "image_analysis",
+  "status": "failed",
+  "progress": 0.0,
+  "file_path": "uploads\\20250728\\image_analysis_7c8ab0602d224d6fb55285fdce5374d4.jpg",
+  "file_info": {
+    "original_name": "test_image.jpg",
+    "size": 11442,
+    "content_type": "image/jpeg",
+    "md5": "8c885e6b7f0a8afc9e7eabab039a5bcb",
+    "saved_path": "uploads\\20250728\\image_analysis_7c8ab0602d224d6fb55285fdce5374d4.jpg"
+  },
+  "analysis_options": {
+    "enable_ocr": true,
+    "enable_scene_analysis": true,
+    "enable_object_detection": true,
+    "language": "auto",
+    "detail_level": "medium"
+  },
+  "created_at": "2025-07-28T18:07:00.254546",
+  "updated_at": "2025-07-28T18:07:01.484300",
+  "message": "开始图像分析",
+  "result": {
+    "frame_timestamp": 467.0,
+    "frame_path": "uploads\\20250728\\image_analysis_7c8ab0602d224d6fb55285fdce5374d4.jpg",
+    "ocr_results": [
+      {
+        "text": "Sample text from image",
+        "confidence": 0.99,
+        "bounding_box": {
+          "x": 10,
+          "y": 10,
+          "width": 200,
+          "height": 30
+        },
+        "language": "zh-cn"
+      }
+    ],
+    "extracted_text": "Sample text from image",
+    "scene_analysis": {
+      "description": "一个现代化的办公室环境，有电脑和文件",
+      "confidence": 0.89,
+      "tags": [
+        "办公",
+        "室内",
+        "工作",
+        "电脑"
+      ],
+      "colors": [
+        "红色",
+        "黄色",
+        "绿色"
+      ],
+      "composition": "三分构图"
+    },
+    "objects": [
+      {
+        "label": "phone",
+        "confidence": 0.9199999999999999,
+        "bounding_box": {
+          "x": 10,
+          "y": 10,
+          "width": 116,
+          "height": 85
+        }
+      },
+      {
+        "label": "chair",
+        "confidence": 0.76,
+        "bounding_box": {
+          "x": 60,
+          "y": 50,
+          "width": 105,
+          "height": 86
+        }
+      }
+    ],
+    "processing_time": 1.2267553806304932,
+    "model_used": "MockImageRecognition",
+    "error": null
+  },
+  "error_message": "'QueueService' object has no attribute 'update_task'"
+}

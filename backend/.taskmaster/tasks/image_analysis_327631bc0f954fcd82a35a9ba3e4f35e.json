@@ -1,0 +1,103 @@
+{
+  "task_id": "image_analysis_327631bc0f954fcd82a35a9ba3e4f35e",
+  "type": "image_analysis",
+  "status": "failed",
+  "progress": 0.0,
+  "file_path": "uploads\\20250728\\image_analysis_327631bc0f954fcd82a35a9ba3e4f35e.jpg",
+  "file_info": {
+    "original_name": "test_image.jpg",
+    "size": 11442,
+    "content_type": "image/jpeg",
+    "md5": "8c885e6b7f0a8afc9e7eabab039a5bcb",
+    "saved_path": "uploads\\20250728\\image_analysis_327631bc0f954fcd82a35a9ba3e4f35e.jpg"
+  },
+  "analysis_options": {
+    "enable_ocr": true,
+    "enable_scene_analysis": true,
+    "enable_object_detection": true,
+    "language": "auto",
+    "detail_level": "medium"
+  },
+  "created_at": "2025-07-28T18:00:58.262586",
+  "updated_at": "2025-07-28T18:00:59.485199",
+  "result": {
+    "frame_timestamp": 3516.0,
+    "frame_path": "uploads\\20250728\\image_analysis_327631bc0f954fcd82a35a9ba3e4f35e.jpg",
+    "ocr_results": [
+      {
+        "text": "Sample text from image",
+        "confidence": 0.98,
+        "bounding_box": {
+          "x": 10,
+          "y": 10,
+          "width": 200,
+          "height": 30
+        },
+        "language": "zh-cn"
+      }
+    ],
+    "extracted_text": "Sample text from image",
+    "scene_analysis": {
+      "description": "室内会议室，有投影屏幕和桌椅",
+      "confidence": 0.9,
+      "tags": [
+        "会议",
+        "室内",
+        "商务",
+        "屏幕"
+      ],
+      "colors": [
+        "蓝色",
+        "白色",
+        "灰色"
+      ],
+      "composition": "三分构图"
+    },
+    "objects": [
+      {
+        "label": "screen",
+        "confidence": 0.94,
+        "bounding_box": {
+          "x": 10,
+          "y": 10,
+          "width": 80,
+          "height": 93
+        }
+      },
+      {
+        "label": "screen",
+        "confidence": 0.7,
+        "bounding_box": {
+          "x": 60,
+          "y": 50,
+          "width": 113,
+          "height": 97
+        }
+      },
+      {
+        "label": "person",
+        "confidence": 0.83,
+        "bounding_box": {
+          "x": 110,
+          "y": 90,
+          "width": 117,
+          "height": 73
+        }
+      },
+      {
+        "label": "table",
+        "confidence": 0.87,
+        "bounding_box": {
+          "x": 160,
+          "y": 130,
+          "width": 93,
+          "height": 63
+        }
+      }
+    ],
+    "processing_time": 1.2181000709533691,
+    "model_used": "MockImageRecognition",
+    "error": null
+  },
+  "message": "'QueueService' object has no attribute 'update_task'"
+}

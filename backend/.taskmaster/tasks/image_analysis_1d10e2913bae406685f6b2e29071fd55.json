@@ -1,0 +1,94 @@
+{
+  "task_id": "image_analysis_1d10e2913bae406685f6b2e29071fd55",
+  "type": "image_analysis",
+  "status": "failed",
+  "progress": 0.0,
+  "file_path": "uploads\\20250728\\image_analysis_1d10e2913bae406685f6b2e29071fd55.jpg",
+  "file_info": {
+    "original_name": "test.jpg",
+    "size": 1022,
+    "content_type": "image/jpeg",
+    "md5": "134f287973a87d204f56c674f29e6fe2",
+    "saved_path": "uploads\\20250728\\image_analysis_1d10e2913bae406685f6b2e29071fd55.jpg"
+  },
+  "analysis_options": {
+    "enable_ocr": true,
+    "enable_scene_analysis": true,
+    "enable_object_detection": true,
+    "language": "auto",
+    "detail_level": "medium"
+  },
+  "created_at": "2025-07-28T18:05:41.618935",
+  "updated_at": "2025-07-28T18:05:42.839145",
+  "message": "开始图像分析",
+  "result": {
+    "frame_timestamp": 1507.0,
+    "frame_path": "uploads\\20250728\\image_analysis_1d10e2913bae406685f6b2e29071fd55.jpg",
+    "ocr_results": [
+      {
+        "text": "这是一段模拟的OCR文本",
+        "confidence": 0.9,
+        "bounding_box": {
+          "x": 10,
+          "y": 10,
+          "width": 200,
+          "height": 30
+        },
+        "language": "zh-cn"
+      }
+    ],
+    "extracted_text": "这是一段模拟的OCR文本",
+    "scene_analysis": {
+      "description": "室内会议室，有投影屏幕和桌椅",
+      "confidence": 0.9700000000000001,
+      "tags": [
+        "会议",
+        "室内",
+        "商务",
+        "屏幕"
+      ],
+      "colors": [
+        "红色",
+        "黄色",
+        "绿色"
+      ],
+      "composition": "三分构图"
+    },
+    "objects": [
+      {
+        "label": "car",
+        "confidence": 0.7899999999999999,
+        "bounding_box": {
+          "x": 10,
+          "y": 10,
+          "width": 117,
+          "height": 81
+        }
+      },
+      {
+        "label": "building",
+        "confidence": 0.87,
+        "bounding_box": {
+          "x": 60,
+          "y": 50,
+          "width": 101,
+          "height": 68
+        }
+      },
+      {
+        "label": "car",
+        "confidence": 0.8099999999999999,
+        "bounding_box": {
+          "x": 110,
+          "y": 90,
+          "width": 88,
+          "height": 62
+        }
+      }
+    ],
+    "processing_time": 1.2162120342254639,
+    "model_used": "MockImageRecognition",
+    "error": null
+  },
+  "error_message": "'QueueService' object has no attribute 'update_task'"
+}

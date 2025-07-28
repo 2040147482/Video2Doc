@@ -178,8 +178,9 @@ class QueueService:
         
         self._save_task(task_id)
         
-        # 触发回调
-        self._trigger_callbacks(task_id, status, progress)
+        # 注意：暂时移除回调触发以避免异步问题
+        # TODO: 修复异步回调
+        # self._trigger_callbacks(task_id, status, progress)
         
         logger.info(f"更新任务状态: {task_id} -> {status} ({progress:.1%})")
     

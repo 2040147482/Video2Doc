@@ -1,0 +1,93 @@
+{
+  "task_id": "image_analysis_b6918520c90f44fcaef4f686acfe446a",
+  "type": "image_analysis",
+  "status": "failed",
+  "progress": 0.0,
+  "file_path": "uploads\\20250728\\image_analysis_b6918520c90f44fcaef4f686acfe446a.jpg",
+  "file_info": {
+    "original_name": "test_image.jpg",
+    "size": 11442,
+    "content_type": "image/jpeg",
+    "md5": "8c885e6b7f0a8afc9e7eabab039a5bcb",
+    "saved_path": "uploads\\20250728\\image_analysis_b6918520c90f44fcaef4f686acfe446a.jpg"
+  },
+  "analysis_options": {
+    "enable_ocr": true,
+    "enable_scene_analysis": true,
+    "enable_object_detection": true,
+    "language": "auto",
+    "detail_level": "medium"
+  },
+  "created_at": "2025-07-28T17:55:53.409888",
+  "updated_at": "2025-07-28T17:55:54.660204",
+  "result": {
+    "frame_timestamp": 2940.0,
+    "frame_path": "uploads\\20250728\\image_analysis_b6918520c90f44fcaef4f686acfe446a.jpg",
+    "ocr_results": [
+      {
+        "text": "Sample text from image",
+        "confidence": 0.85,
+        "bounding_box": {
+          "x": 10,
+          "y": 10,
+          "width": 200,
+          "height": 30
+        },
+        "language": "zh-cn"
+      }
+    ],
+    "extracted_text": "Sample text from image",
+    "scene_analysis": {
+      "description": "户外自然风景，包含树木和天空",
+      "confidence": 0.99,
+      "tags": [
+        "自然",
+        "户外",
+        "风景",
+        "植物"
+      ],
+      "colors": [
+        "蓝色",
+        "白色",
+        "灰色"
+      ],
+      "composition": "三分构图"
+    },
+    "objects": [
+      {
+        "label": "computer",
+        "confidence": 0.72,
+        "bounding_box": {
+          "x": 10,
+          "y": 10,
+          "width": 80,
+          "height": 89
+        }
+      },
+      {
+        "label": "chair",
+        "confidence": 0.8999999999999999,
+        "bounding_box": {
+          "x": 60,
+          "y": 50,
+          "width": 109,
+          "height": 65
+        }
+      },
+      {
+        "label": "person",
+        "confidence": 0.8899999999999999,
+        "bounding_box": {
+          "x": 110,
+          "y": 90,
+          "width": 85,
+          "height": 99
+        }
+      }
+    ],
+    "processing_time": 1.243319034576416,
+    "model_used": "MockImageRecognition",
+    "error": null
+  },
+  "message": "'QueueService' object has no attribute 'update_task'"
+}

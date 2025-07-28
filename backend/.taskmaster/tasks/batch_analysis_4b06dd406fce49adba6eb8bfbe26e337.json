@@ -1,0 +1,157 @@
+{
+  "task_id": "batch_analysis_4b06dd406fce49adba6eb8bfbe26e337",
+  "type": "batch_image_analysis",
+  "status": "failed",
+  "progress": 0.0,
+  "frame_paths": [
+    "D:\\develop\\work-space\\cursor-pro\\Video2Doc\\backend\\test_frame_0.jpg",
+    "D:\\develop\\work-space\\cursor-pro\\Video2Doc\\backend\\test_frame_1.jpg",
+    "D:\\develop\\work-space\\cursor-pro\\Video2Doc\\backend\\test_frame_2.jpg"
+  ],
+  "total_frames": 3,
+  "completed_frames": 3,
+  "results": [
+    {
+      "frame_timestamp": 0.0,
+      "frame_path": "D:\\develop\\work-space\\cursor-pro\\Video2Doc\\backend\\test_frame_0.jpg",
+      "ocr_results": [
+        {
+          "text": "Mock OCR Text Example",
+          "confidence": 0.99,
+          "bounding_box": {
+            "x": 10,
+            "y": 10,
+            "width": 200,
+            "height": 30
+          },
+          "language": "en"
+        }
+      ],
+      "extracted_text": "Mock OCR Text Example",
+      "scene_analysis": {
+        "description": "户外自然风景",
+        "confidence": 0.8600000000000001,
+        "tags": [
+          "自然",
+          "户外",
+          "风景",
+          "植物"
+        ],
+        "colors": [
+          "绿色",
+          "棕色",
+          "蓝色"
+        ],
+        "composition": "三分构图"
+      },
+      "objects": [],
+      "processing_time": 1.011300802230835,
+      "model_used": "MockImageRecognition",
+      "error": null
+    },
+    {
+      "frame_path": "D:\\develop\\work-space\\cursor-pro\\Video2Doc\\backend\\test_frame_0.jpg",
+      "error": "'QueueService' object has no attribute 'update_task'",
+      "frame_timestamp": 0.0,
+      "processing_time": 0.0
+    },
+    {
+      "frame_timestamp": 1.0,
+      "frame_path": "D:\\develop\\work-space\\cursor-pro\\Video2Doc\\backend\\test_frame_1.jpg",
+      "ocr_results": [
+        {
+          "text": "Sample text from image",
+          "confidence": 0.86,
+          "bounding_box": {
+            "x": 10,
+            "y": 10,
+            "width": 200,
+            "height": 30
+          },
+          "language": "en"
+        }
+      ],
+      "extracted_text": "Sample text from image",
+      "scene_analysis": {
+        "description": "室内会议室",
+        "confidence": 0.9400000000000001,
+        "tags": [
+          "会议",
+          "室内",
+          "商务",
+          "屏幕"
+        ],
+        "colors": [
+          "蓝色",
+          "白色",
+          "灰色"
+        ],
+        "composition": "三分构图"
+      },
+      "objects": [],
+      "processing_time": 1.0068199634552002,
+      "model_used": "MockImageRecognition",
+      "error": null
+    },
+    {
+      "frame_path": "D:\\develop\\work-space\\cursor-pro\\Video2Doc\\backend\\test_frame_1.jpg",
+      "error": "'QueueService' object has no attribute 'update_task'",
+      "frame_timestamp": 0.0,
+      "processing_time": 0.0
+    },
+    {
+      "frame_timestamp": 2.0,
+      "frame_path": "D:\\develop\\work-space\\cursor-pro\\Video2Doc\\backend\\test_frame_2.jpg",
+      "ocr_results": [
+        {
+          "text": "Mock OCR Text Example",
+          "confidence": 0.85,
+          "bounding_box": {
+            "x": 10,
+            "y": 10,
+            "width": 200,
+            "height": 30
+          },
+          "language": "en"
+        }
+      ],
+      "extracted_text": "Mock OCR Text Example",
+      "scene_analysis": {
+        "description": "户外自然风景",
+        "confidence": 0.88,
+        "tags": [
+          "自然",
+          "户外",
+          "风景",
+          "植物"
+        ],
+        "colors": [
+          "蓝色",
+          "白色",
+          "灰色"
+        ],
+        "composition": "三分构图"
+      },
+      "objects": [],
+      "processing_time": 1.0263032913208008,
+      "model_used": "MockImageRecognition",
+      "error": null
+    },
+    {
+      "frame_path": "D:\\develop\\work-space\\cursor-pro\\Video2Doc\\backend\\test_frame_2.jpg",
+      "error": "'QueueService' object has no attribute 'update_task'",
+      "frame_timestamp": 0.0,
+      "processing_time": 0.0
+    }
+  ],
+  "analysis_options": {
+    "enable_ocr": true,
+    "enable_scene_analysis": true,
+    "enable_object_detection": false,
+    "language": "en",
+    "detail_level": "low"
+  },
+  "created_at": "2025-07-28T18:01:03.363368",
+  "updated_at": "2025-07-28T18:01:06.463361",
+  "message": "'QueueService' object has no attribute 'update_task'"
+}

@@ -1,0 +1,104 @@
+{
+  "task_id": "image_analysis_fde56cb924a74d5aae823be27a34fb29",
+  "type": "image_analysis",
+  "status": "failed",
+  "progress": 0.0,
+  "file_path": "uploads\\20250728\\image_analysis_fde56cb924a74d5aae823be27a34fb29.jpg",
+  "file_info": {
+    "original_name": "test.jpg",
+    "size": 1022,
+    "content_type": "image/jpeg",
+    "md5": "134f287973a87d204f56c674f29e6fe2",
+    "saved_path": "uploads\\20250728\\image_analysis_fde56cb924a74d5aae823be27a34fb29.jpg"
+  },
+  "analysis_options": {
+    "enable_ocr": true,
+    "enable_scene_analysis": true,
+    "enable_object_detection": true,
+    "language": "auto",
+    "detail_level": "medium"
+  },
+  "created_at": "2025-07-28T18:05:25.976943",
+  "updated_at": "2025-07-28T18:05:27.200200",
+  "message": "开始图像分析",
+  "result": {
+    "frame_timestamp": 1657.0,
+    "frame_path": "uploads\\20250728\\image_analysis_fde56cb924a74d5aae823be27a34fb29.jpg",
+    "ocr_results": [
+      {
+        "text": "Sample text from image",
+        "confidence": 0.9,
+        "bounding_box": {
+          "x": 10,
+          "y": 10,
+          "width": 200,
+          "height": 30
+        },
+        "language": "zh-cn"
+      }
+    ],
+    "extracted_text": "Sample text from image",
+    "scene_analysis": {
+      "description": "城市街道场景，有建筑物和车辆",
+      "confidence": 0.98,
+      "tags": [
+        "城市",
+        "户外",
+        "交通",
+        "建筑"
+      ],
+      "colors": [
+        "绿色",
+        "棕色",
+        "蓝色"
+      ],
+      "composition": "三分构图"
+    },
+    "objects": [
+      {
+        "label": "chair",
+        "confidence": 0.83,
+        "bounding_box": {
+          "x": 10,
+          "y": 10,
+          "width": 95,
+          "height": 77
+        }
+      },
+      {
+        "label": "table",
+        "confidence": 0.85,
+        "bounding_box": {
+          "x": 60,
+          "y": 50,
+          "width": 97,
+          "height": 94
+        }
+      },
+      {
+        "label": "book",
+        "confidence": 0.87,
+        "bounding_box": {
+          "x": 110,
+          "y": 90,
+          "width": 114,
+          "height": 65
+        }
+      },
+      {
+        "label": "car",
+        "confidence": 0.84,
+        "bounding_box": {
+          "x": 160,
+          "y": 130,
+          "width": 85,
+          "height": 64
+        }
+      }
+    ],
+    "processing_time": 1.219257116317749,
+    "model_used": "MockImageRecognition",
+    "error": null
+  },
+  "error_message": "'QueueService' object has no attribute 'update_task'"
+}

@@ -20,6 +20,8 @@ from app.routers import speech
 from app.routers import speech_simple
 # 导入超级简化的语音识别路由（用于诊断）
 from app.routers import speech_ultra_simple
+# 导入图像识别路由
+from app.routers import image_recognition
 
 # 配置日志
 logging.basicConfig(
@@ -99,6 +101,8 @@ app.include_router(speech.router, prefix="/api")
 app.include_router(speech_simple.router, prefix="/api")
 # 添加超级简化的语音识别路由（用于诊断）
 app.include_router(speech_ultra_simple.router, prefix="/api")
+# 添加图像识别路由
+app.include_router(image_recognition.router, prefix="/api")
 
 # 全局异常处理
 @app.exception_handler(RequestValidationError)
