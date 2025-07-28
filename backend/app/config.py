@@ -24,7 +24,9 @@ class Settings(BaseSettings):
     # 文件存储配置
     upload_folder: str = "uploads"
     temp_folder: str = "temp"
+    results_folder: str = "results"
     max_file_size: int = 2 * 1024 * 1024 * 1024  # 2GB
+    max_audio_size_mb: int = 500  # 500MB
     
     # AI服务API Keys
     openai_api_key: str = ""
@@ -47,6 +49,22 @@ class Settings(BaseSettings):
     
     # 日志配置
     log_level: str = "INFO"
+    
+    # 目录路径属性
+    @property
+    def upload_dir(self) -> str:
+        """上传文件目录路径"""
+        return os.path.abspath(self.upload_folder)
+    
+    @property
+    def temp_dir(self) -> str:
+        """临时文件目录路径"""
+        return os.path.abspath(self.temp_folder)
+    
+    @property
+    def results_dir(self) -> str:
+        """结果文件目录路径"""
+        return os.path.abspath(self.results_folder)
     
     class Config:
         env_file = ".env"

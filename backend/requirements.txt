@@ -1,53 +1,44 @@
-# FastAPI核心框架
-fastapi==0.115.6
-uvicorn[standard]==0.32.1
-
-# 数据验证和序列化
-pydantic==2.10.4
-pydantic-settings==2.7.0
-
-# HTTP客户端
-httpx==0.28.1
-requests==2.32.3
-
-# 文件处理 - 重要：包含aiofiles
-python-multipart==0.0.17
-aiofiles==24.1.0
-
-# 视频处理
-ffmpeg-python==0.2.0
-
-# AI服务客户端
-openai==1.58.1
-anthropic==0.40.0
-
-# 语音识别 - 暂时注释掉有问题的包
-openai-whisper==20240930
-
-# 图像处理
-Pillow==11.0.0
+fastapi==0.104.1
+uvicorn==0.23.2
+pydantic==2.4.2
+pydantic-settings==2.0.3
+python-multipart==0.0.6
+python-dotenv==1.0.0
+httpx==0.25.0
+requests==2.31.0
+aiofiles==23.2.1
+aiohttp==3.8.6
 
 # 数据库
-sqlalchemy==2.0.36
-alembic==1.14.0
-psycopg2-binary==2.9.9
+sqlalchemy==2.0.23
+alembic==1.12.1
 
-# 缓存和任务队列
-redis==5.2.1
-celery==5.4.0
+# 异步任务队列
+redis==5.0.1
+celery==5.3.4
 
-# 环境变量管理
-python-dotenv==1.0.1
+# AI服务
+openai==1.2.4
+# openai-whisper==20231117
+anthropic==0.7.0
+Pillow==10.1.0
+
+# 语音识别
+ffmpeg-python==0.2.0
+torch==2.1.1
+torchaudio==2.1.1
 
 # 日志
-loguru==0.7.3
+loguru==0.7.2
 
-# 工具库
-python-slugify==8.0.4
-python-dateutil==2.9.0
+# 工具
+python-slugify==8.0.1
+python-dateutil==2.8.2
+
+# 测试
+pytest==7.4.3
+pytest-asyncio==0.21.1
 
 # 开发工具
-pytest==8.3.4
-pytest-asyncio==0.24.0
-black==24.10.0
-flake8==7.1.1 
+black==23.10.1
+flake8==6.1.0 

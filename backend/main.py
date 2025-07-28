@@ -14,6 +14,8 @@ from app.exceptions import create_error_response
 from app.routers import health, video
 # 导入新的处理路由
 from app.routers import processing
+# 导入语音识别路由
+from app.routers import speech
 
 # 配置日志
 logging.basicConfig(
@@ -87,6 +89,8 @@ app.include_router(health.router)
 app.include_router(video.router)
 # 添加新的处理路由
 app.include_router(processing.router)
+# 添加语音识别路由
+app.include_router(speech.router)
 
 # 全局异常处理
 @app.exception_handler(RequestValidationError)
