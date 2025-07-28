@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.models import HealthResponse
+from app.models.base import HealthResponse
 from app.config import Settings, get_settings
 from datetime import datetime
 

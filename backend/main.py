@@ -16,6 +16,8 @@ from app.routers import health, video
 from app.routers import processing
 # 导入语音识别路由
 from app.routers import speech
+# 导入简化的语音识别路由（用于调试）
+from app.routers import speech_simple
 
 # 配置日志
 logging.basicConfig(
@@ -85,12 +87,14 @@ app.add_middleware(
 )
 
 # 注册路由
-app.include_router(health.router)
-app.include_router(video.router)
+app.include_router(health.router, prefix="/api")
+app.include_router(video.router, prefix="/api")
 # 添加新的处理路由
-app.include_router(processing.router)
+app.include_router(processing.router, prefix="/api")
 # 添加语音识别路由
-app.include_router(speech.router)
+app.include_router(speech.router, prefix="/api")
+# 添加简化的语音识别路由（用于调试）
+app.include_router(speech_simple.router, prefix="/api")
 
 # 全局异常处理
 @app.exception_handler(RequestValidationError)

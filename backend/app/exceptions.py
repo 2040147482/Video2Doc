@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, Union
+from fastapi.responses import JSONResponse
 
 
 class VideoProcessingError(HTTPException):
@@ -86,13 +87,33 @@ class AIServiceError(HTTPException):
         super().__init__(status_code=status_code, detail=full_detail, headers=headers)
 
 
-def create_error_response(error_type: str, message: str, details: Optional[str] = None) -> Dict[str, Any]:
-    """创建标准化错误响应"""
+def create_error_response(
+    status_code: int, 
+    message: str, 
+    details: Optional[Any] = None
+) -> JSONResponse:
+    """
+    创建标准化错误响应
+    
+    Args:
+        status_code: HTTP状态码
+        message: 错误消息
+        details: 错误详情
+        
+    Returns:
+        JSONResponse: 标准化错误响应
+    """
+    from app.models.base import ErrorResponse
     from datetime import datetime
     
-    return {
-        "error": error_type,
-        "message": message,
-        "details": details,
-        "timestamp": datetime.now().isoformat()
-    } 
+    error_content = ErrorResponse(
+        error=f"error_{status_code}",
+        message=message,
+        details=str(details) if details else None,
+        timestamp=datetime.now()
+    )
+    
+    return JSONResponse(
+        status_code=status_code,
+        content=error_content.dict()
+    ) 

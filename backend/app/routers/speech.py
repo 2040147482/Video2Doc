@@ -103,11 +103,7 @@ async def transcribe_audio(
     
     try:
         # 保存音频文件
-        audio_path = await file_service.save_upload_file(
-            file, 
-            allowed_types=["audio/mpeg", "audio/wav", "audio/ogg", "audio/x-m4a", "audio/webm"],
-            max_size_mb=settings.max_audio_size_mb
-        )
+        audio_path, file_info = await file_service.save_upload_file(file, task_id)
         
         logger.info(f"音频文件已保存: {audio_path}")
         
@@ -141,29 +137,31 @@ async def transcribe_audio(
 
 @router.post("/transcribe/url", response_model=TranscriptionResponse)
 async def transcribe_audio_url(
+    background_tasks: BackgroundTasks,
     url: str = Form(...),
-    request: TranscriptionRequest = None,
-    background_tasks: BackgroundTasks = None,
+    language: Optional[str] = Form(None),
+    model: str = Form("whisper-1"),
+    prompt: Optional[str] = Form(None),
+    temperature: float = Form(0.0),
+    with_timestamps: bool = Form(False),
     settings: Settings = Depends(get_settings)
 ):
     """
     转录音频URL
     
     Args:
-        url: 音频URL
-        request: 转录请求
         background_tasks: 后台任务
+        url: 音频URL
+        language: 语言代码
+        model: 模型名称
+        prompt: 提示词
+        temperature: 采样温度
+        with_timestamps: 是否包含时间戳
         settings: 应用设置
         
     Returns:
         转录结果
     """
-    # 使用默认值处理可能为None的参数
-    if request is None:
-        request = TranscriptionRequest()
-    
-    if background_tasks is None:
-        raise HTTPException(status_code=500, detail="内部服务器错误：无法访问后台任务")
     
     # 生成任务ID
     task_id = f"transcribe_{uuid.uuid4().hex}"
@@ -183,9 +181,9 @@ async def transcribe_audio_url(
         
         # 创建转录选项
         transcribe_options = {
-            "model": request.model,
-            "prompt": request.prompt,
-            "temperature": request.temperature
+            "model": model,
+            "prompt": prompt,
+            "temperature": temperature
         }
         
         # 在后台执行转录
@@ -193,8 +191,8 @@ async def transcribe_audio_url(
             _process_transcription,
             task_id,
             audio_path,
-            request.language,
-            request.with_timestamps,
+            language,
+            with_timestamps,
             transcribe_options
         )
         
@@ -202,7 +200,7 @@ async def transcribe_audio_url(
         return TranscriptionResponse(
             task_id=task_id,
             text="转录中...",
-            language=request.language,
+            language=language,
             duration=0.0
         )
     except Exception as e:
@@ -271,11 +269,8 @@ async def detect_language(
     """
     try:
         # 保存音频文件
-        audio_path = await file_service.save_upload_file(
-            file, 
-            allowed_types=["audio/mpeg", "audio/wav", "audio/ogg", "audio/x-m4a", "audio/webm"],
-            max_size_mb=settings.max_audio_size_mb
-        )
+        task_id = f"detect_lang_{uuid.uuid4().hex}"
+        audio_path, file_info = await file_service.save_upload_file(file, task_id)
         
         logger.info(f"音频文件已保存: {audio_path}")
         

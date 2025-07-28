@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, File, UploadFile, Form
 from fastapi.responses import JSONResponse
-from app.models import (
+from app.models.base import (
     VideoUploadRequest, 
     VideoProcessResponse, 
     TaskStatusResponse,

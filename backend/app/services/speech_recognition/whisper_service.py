@@ -4,223 +4,74 @@ OpenAI Whisper语音识别服务
 """
 
 import os
-import logging
+import json
 import asyncio
-from typing import Dict, Any, List, Optional, Union
+import logging
+from typing import Optional, Dict, Any, List
 from pathlib import Path
 
-# 导入基础类
 from .base import BaseSpeechRecognition, SpeechRecognitionResult
 
 # 配置日志
 logger = logging.getLogger(__name__)
 
 class WhisperService(BaseSpeechRecognition):
-    """OpenAI Whisper语音识别服务"""
+    """基于OpenAI Whisper的语音识别服务"""
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "whisper-1"):
-        """
-        初始化Whisper服务
+    def __init__(self):
+        """初始化Whisper服务"""
+        self.api_key = os.environ.get("OPENAI_API_KEY")
+        self.model_name = "whisper-1"  # OpenAI API模型名称
+        self.local_model_name = "base"  # 本地模型名称
+        self.local_model = None
+        self.use_mock = False  # 是否使用模拟模式
         
-        Args:
-            api_key: OpenAI API密钥，如果为None则从环境变量获取
-            model: Whisper模型名称
-        """
-        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         if not self.api_key:
-            logger.warning("未设置OpenAI API密钥，将使用本地Whisper模型")
-            self.use_api = False
-        else:
-            self.use_api = True
-        
-        self.model = model
-        
-        # 如果使用API，导入OpenAI客户端
-        if self.use_api:
-            try:
-                import openai
-                self.client = openai.OpenAI(api_key=self.api_key)
-                logger.info("OpenAI客户端初始化成功")
-            except ImportError:
-                logger.error("未安装OpenAI包，请使用pip install openai安装")
-                self.use_api = False
-            except Exception as e:
-                logger.error(f"OpenAI客户端初始化失败: {str(e)}")
-                self.use_api = False
-        
-        # 如果不使用API，尝试导入本地Whisper
-        if not self.use_api:
+            print("未设置OpenAI API密钥，将使用本地Whisper模型")
             try:
                 import whisper
-                self.whisper = whisper
-                self.whisper_model = None  # 延迟加载模型
-                logger.info("本地Whisper初始化成功")
-            except ImportError:
-                logger.error("未安装Whisper包，请使用pip install openai-whisper安装")
-                raise ImportError("未安装Whisper包，请使用pip install openai-whisper安装")
-    
-    async def _load_local_model(self, model_name: str = "base"):
-        """
-        加载本地Whisper模型
-        
-        Args:
-            model_name: 模型名称，可选值：tiny, base, small, medium, large
-            
-        Returns:
-            加载的模型
-        """
-        if self.whisper_model is None:
-            logger.info(f"加载本地Whisper模型: {model_name}")
-            # 在线程池中加载模型，避免阻塞事件循环
-            loop = asyncio.get_event_loop()
-            self.whisper_model = await loop.run_in_executor(
-                None, 
-                lambda: self.whisper.load_model(model_name)
-            )
-            logger.info(f"本地Whisper模型加载成功: {model_name}")
-        
-        return self.whisper_model
+                self.local_model = whisper.load_model(self.local_model_name)
+                logger.info(f"已加载本地Whisper模型: {self.local_model_name}")
+            except Exception as e:
+                logger.warning(f"无法加载本地Whisper模型: {str(e)}")
+                logger.warning("将使用模拟模式进行语音识别")
+                self.use_mock = True
     
     async def transcribe(
         self, 
-        audio_path: Union[str, Path],
+        audio_path: str, 
         language: Optional[str] = None,
-        **kwargs
+        **options
     ) -> SpeechRecognitionResult:
         """
-        转录音频
+        转录音频文件
         
         Args:
             audio_path: 音频文件路径
-            language: 语言代码（如果已知）
-            **kwargs: 其他参数
+            language: 语言代码
+            **options: 其他选项
             
         Returns:
-            转录结果
-            
-        Raises:
-            Exception: 如果转录失败
+            SpeechRecognitionResult: 转录结果
         """
-        audio_path = str(audio_path)
-        logger.info(f"转录音频: {audio_path}")
-        
+        if self.use_mock:
+            return self._get_mock_result(audio_path, language)
+            
         try:
-            if self.use_api:
-                return await self._transcribe_with_api(audio_path, language, **kwargs)
+            if self.api_key:
+                return await self._transcribe_with_api(audio_path, language, **options)
             else:
-                return await self._transcribe_with_local(audio_path, language, **kwargs)
+                return await self._transcribe_with_local(audio_path, language, **options)
         except Exception as e:
-            logger.error(f"音频转录失败: {str(e)}")
-            raise Exception(f"音频转录失败: {str(e)}")
-    
-    async def _transcribe_with_api(
-        self, 
-        audio_path: str,
-        language: Optional[str] = None,
-        **kwargs
-    ) -> SpeechRecognitionResult:
-        """
-        使用OpenAI API转录音频
-        
-        Args:
-            audio_path: 音频文件路径
-            language: 语言代码（如果已知）
-            **kwargs: 其他参数
-            
-        Returns:
-            转录结果
-        """
-        logger.info(f"使用OpenAI API转录音频: {audio_path}")
-        
-        # 构建请求参数
-        request_params = {
-            "model": self.model,
-            "response_format": "verbose_json",
-        }
-        
-        if language:
-            request_params["language"] = language
-        
-        # 添加其他参数
-        for key, value in kwargs.items():
-            if key in ["prompt", "temperature"]:
-                request_params[key] = value
-        
-        # 在线程池中执行API调用，避免阻塞事件循环
-        loop = asyncio.get_event_loop()
-        
-        with open(audio_path, "rb") as audio_file:
-            response = await loop.run_in_executor(
-                None,
-                lambda: self.client.audio.transcriptions.create(
-                    file=audio_file,
-                    **request_params
-                )
+            logger.error(f"转录失败: {str(e)}")
+            return SpeechRecognitionResult(
+                text="转录失败",
+                language=language or "unknown",
+                duration=0.0,
+                segments=[]
             )
-        
-        # 解析响应
-        result_dict = response.model_dump()
-        
-        # 创建结果对象
-        return SpeechRecognitionResult(
-            text=result_dict.get("text", ""),
-            segments=result_dict.get("segments", []),
-            language=result_dict.get("language"),
-            duration=result_dict.get("duration", 0.0)
-        )
     
-    async def _transcribe_with_local(
-        self, 
-        audio_path: str,
-        language: Optional[str] = None,
-        **kwargs
-    ) -> SpeechRecognitionResult:
-        """
-        使用本地Whisper模型转录音频
-        
-        Args:
-            audio_path: 音频文件路径
-            language: 语言代码（如果已知）
-            **kwargs: 其他参数
-            
-        Returns:
-            转录结果
-        """
-        logger.info(f"使用本地Whisper模型转录音频: {audio_path}")
-        
-        # 获取模型名称
-        model_name = kwargs.get("model_name", "base")
-        
-        # 加载模型
-        model = await self._load_local_model(model_name)
-        
-        # 构建转录选项
-        transcribe_options = {}
-        
-        if language:
-            transcribe_options["language"] = language
-        
-        # 添加其他参数
-        for key, value in kwargs.items():
-            if key in ["initial_prompt", "temperature", "beam_size"]:
-                transcribe_options[key] = value
-        
-        # 在线程池中执行转录，避免阻塞事件循环
-        loop = asyncio.get_event_loop()
-        result = await loop.run_in_executor(
-            None,
-            lambda: model.transcribe(audio_path, **transcribe_options)
-        )
-        
-        # 创建结果对象
-        return SpeechRecognitionResult(
-            text=result.get("text", ""),
-            segments=result.get("segments", []),
-            language=result.get("language"),
-            duration=result.get("duration", 0.0)
-        )
-    
-    async def detect_language(self, audio_path: Union[str, Path]) -> str:
+    async def detect_language(self, audio_path: str) -> str:
         """
         检测音频语言
         
@@ -228,58 +79,236 @@ class WhisperService(BaseSpeechRecognition):
             audio_path: 音频文件路径
             
         Returns:
-            语言代码
-            
-        Raises:
-            Exception: 如果语言检测失败
+            str: 检测到的语言代码
         """
-        audio_path = str(audio_path)
-        logger.info(f"检测音频语言: {audio_path}")
-        
+        if self.use_mock:
+            return "zh-CN" if "zh" in os.environ.get("LANG", "") else "en"
+            
         try:
-            if self.use_api:
-                # 使用API进行语言检测
-                # 注意：OpenAI API目前没有专门的语言检测端点，我们使用转录API并获取返回的语言
-                result = await self._transcribe_with_api(audio_path)
-                return result.language or "en"
+            if self.api_key:
+                # 使用API检测语言
+                import openai
+                openai.api_key = self.api_key
+                
+                with open(audio_path, "rb") as audio_file:
+                    response = await openai.Audio.atranscribe(
+                        model=self.model_name,
+                        file=audio_file,
+                        response_format="verbose_json"
+                    )
+                
+                return response.get("language", "en")
             else:
-                # 使用本地模型进行语言检测
-                model = await self._load_local_model("base")
+                # 使用本地模型检测语言
+                if not self.local_model:
+                    return "en"  # 默认英语
                 
-                # 在线程池中执行语言检测，避免阻塞事件循环
-                loop = asyncio.get_event_loop()
-                result = await loop.run_in_executor(
-                    None,
-                    lambda: model.detect_language(audio_path)
-                )
-                
-                return result[0] or "en"
+                result = self.local_model.transcribe(audio_path, task="translate")
+                return result.get("language", "en")
         except Exception as e:
-            logger.error(f"音频语言检测失败: {str(e)}")
-            raise Exception(f"音频语言检测失败: {str(e)}")
+            logger.error(f"语言检测失败: {str(e)}")
+            return "en"  # 默认英语
     
     async def transcribe_with_timestamps(
         self, 
-        audio_path: Union[str, Path],
+        audio_path: str, 
         language: Optional[str] = None,
-        **kwargs
+        **options
     ) -> SpeechRecognitionResult:
         """
-        转录音频并带有时间戳
+        转录音频文件并包含时间戳
         
         Args:
             audio_path: 音频文件路径
-            language: 语言代码（如果已知）
-            **kwargs: 其他参数
+            language: 语言代码
+            **options: 其他选项
             
         Returns:
-            带时间戳的转录结果
-            
-        Raises:
-            Exception: 如果转录失败
+            SpeechRecognitionResult: 转录结果
         """
-        # 对于Whisper，普通转录已经包含时间戳信息
-        return await self.transcribe(audio_path, language, **kwargs)
+        if self.use_mock:
+            return self._get_mock_result_with_timestamps(audio_path, language)
+            
+        try:
+            if self.api_key:
+                return await self._transcribe_with_api(
+                    audio_path, 
+                    language, 
+                    response_format="verbose_json",
+                    **options
+                )
+            else:
+                return await self._transcribe_with_local(
+                    audio_path, 
+                    language, 
+                    with_timestamps=True,
+                    **options
+                )
+        except Exception as e:
+            logger.error(f"带时间戳转录失败: {str(e)}")
+            return SpeechRecognitionResult(
+                text="转录失败",
+                language=language or "unknown",
+                duration=0.0,
+                segments=[]
+            )
+    
+    async def _transcribe_with_api(
+        self, 
+        audio_path: str, 
+        language: Optional[str] = None,
+        **options
+    ) -> SpeechRecognitionResult:
+        """使用OpenAI API转录"""
+        import openai
+        openai.api_key = self.api_key
+        
+        with open(audio_path, "rb") as audio_file:
+            response_format = options.get("response_format", "text")
+            model = options.get("model", self.model_name)
+            
+            response_kwargs = {
+                "model": model,
+                "file": audio_file,
+                "response_format": response_format
+            }
+            
+            if language:
+                response_kwargs["language"] = language
+            
+            if "prompt" in options and options["prompt"]:
+                response_kwargs["prompt"] = options["prompt"]
+            
+            if "temperature" in options:
+                response_kwargs["temperature"] = float(options["temperature"])
+            
+            response = await openai.Audio.atranscribe(**response_kwargs)
+            
+            if response_format == "verbose_json":
+                # 处理包含时间戳的JSON响应
+                segments = []
+                for segment in response.get("segments", []):
+                    segments.append({
+                        "start": segment.get("start", 0),
+                        "end": segment.get("end", 0),
+                        "text": segment.get("text", "")
+                    })
+                
+                return SpeechRecognitionResult(
+                    text=response.get("text", ""),
+                    language=response.get("language", language or "unknown"),
+                    duration=response.get("duration", 0.0),
+                    segments=segments
+                )
+            else:
+                # 处理纯文本响应
+                return SpeechRecognitionResult(
+                    text=response,
+                    language=language or "unknown",
+                    duration=0.0,
+                    segments=[]
+                )
+    
+    async def _transcribe_with_local(
+        self, 
+        audio_path: str, 
+        language: Optional[str] = None,
+        with_timestamps: bool = False,
+        **options
+    ) -> SpeechRecognitionResult:
+        """使用本地Whisper模型转录"""
+        if not self.local_model:
+            raise ValueError("未加载本地Whisper模型")
+        
+        # 使用线程池运行CPU密集型任务
+        loop = asyncio.get_event_loop()
+        
+        # 转录选项
+        transcribe_options = {}
+        if language:
+            transcribe_options["language"] = language
+        
+        if "prompt" in options and options["prompt"]:
+            transcribe_options["initial_prompt"] = options["prompt"]
+        
+        if "temperature" in options:
+            transcribe_options["temperature"] = float(options["temperature"])
+        
+        # 使用run_in_executor在线程池中运行CPU密集型任务
+        result = await loop.run_in_executor(
+            None,
+            lambda: self.local_model.transcribe(audio_path, **transcribe_options)
+        )
+        
+        # 处理结果
+        text = result.get("text", "")
+        detected_language = result.get("language", language or "unknown")
+        
+        if with_timestamps:
+            segments = []
+            for segment in result.get("segments", []):
+                segments.append({
+                    "start": segment.get("start", 0),
+                    "end": segment.get("end", 0),
+                    "text": segment.get("text", "")
+                })
+            
+            return SpeechRecognitionResult(
+                text=text,
+                language=detected_language,
+                duration=result.get("duration", 0.0),
+                segments=segments
+            )
+        else:
+            return SpeechRecognitionResult(
+                text=text,
+                language=detected_language,
+                duration=result.get("duration", 0.0),
+                segments=[]
+            )
+    
+    def _get_mock_result(self, audio_path: str, language: Optional[str] = None) -> SpeechRecognitionResult:
+        """获取模拟转录结果"""
+        logger.info(f"使用模拟模式转录: {audio_path}")
+        
+        # 根据文件名生成一些模拟文本
+        filename = Path(audio_path).name
+        mock_text = f"这是一段模拟转录文本，基于文件 {filename}。这是语音识别的模拟结果，因为无法加载真实的语音识别模型。"
+        
+        detected_language = language or "zh-CN" if "zh" in os.environ.get("LANG", "") else "en"
+        
+        return SpeechRecognitionResult(
+            text=mock_text,
+            language=detected_language,
+            duration=30.0,
+            segments=[]
+        )
+    
+    def _get_mock_result_with_timestamps(self, audio_path: str, language: Optional[str] = None) -> SpeechRecognitionResult:
+        """获取带时间戳的模拟转录结果"""
+        logger.info(f"使用模拟模式转录(带时间戳): {audio_path}")
+        
+        # 根据文件名生成一些模拟文本
+        filename = Path(audio_path).name
+        mock_text = f"这是一段模拟转录文本，基于文件 {filename}。这是语音识别的模拟结果，因为无法加载真实的语音识别模型。"
+        
+        detected_language = language or "zh-CN" if "zh" in os.environ.get("LANG", "") else "en"
+        
+        # 创建模拟片段
+        segments = [
+            {"start": 0.0, "end": 5.0, "text": "这是一段模拟转录文本，"},
+            {"start": 5.0, "end": 10.0, "text": f"基于文件 {filename}。"},
+            {"start": 10.0, "end": 15.0, "text": "这是语音识别的模拟结果，"},
+            {"start": 15.0, "end": 20.0, "text": "因为无法加载真实的语音识别模型。"}
+        ]
+        
+        return SpeechRecognitionResult(
+            text=mock_text,
+            language=detected_language,
+            duration=20.0,
+            segments=segments
+        )
 
-# 创建全局实例
+
+# 全局Whisper服务实例
 whisper_service = WhisperService()

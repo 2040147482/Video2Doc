@@ -1,3 +1,7 @@
+"""
+基础模型定义
+"""
+
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Optional, List, Literal
 from datetime import datetime

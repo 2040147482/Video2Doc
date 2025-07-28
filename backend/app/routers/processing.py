@@ -8,6 +8,7 @@ import logging
 from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
 
+# 修改导入路径
 from app.models.video_processing import (
     ProcessingOptions, 
     ProcessingTask, 
