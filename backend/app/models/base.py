@@ -23,6 +23,50 @@ class OutputFormat(str, Enum):
     HTML = "html"
     TXT = "txt"
     ZIP = "zip"
+    JSON = "json"
+    DOCX = "docx"
+
+
+class ExportTemplate(str, Enum):
+    """导出模板枚举"""
+    STANDARD = "standard"
+    ACADEMIC = "academic"
+    PRESENTATION = "presentation"
+    SIMPLE = "simple"
+    DETAILED = "detailed"
+
+
+class ExportRequest(BaseModel):
+    """导出请求模型"""
+    task_id: str
+    formats: List[OutputFormat]
+    template: ExportTemplate = ExportTemplate.STANDARD
+    include_images: bool = True
+    include_timestamps: bool = True
+    include_metadata: bool = True
+    custom_filename: Optional[str] = None
+
+
+class ExportResponse(BaseModel):
+    """导出响应模型"""
+    export_id: str
+    status: str
+    message: str
+    download_urls: Optional[Dict[str, str]] = None
+    expires_at: Optional[datetime] = None
+
+
+class ExportStatus(BaseModel):
+    """导出状态模型"""
+    export_id: str
+    status: str
+    progress: float
+    message: str
+    formats_completed: List[OutputFormat]
+    download_urls: Optional[Dict[str, str]] = None
+    error_details: Optional[str] = None
+    created_at: datetime
+    completed_at: Optional[datetime] = None
 
 
 class VideoUploadRequest(BaseModel):

@@ -24,6 +24,8 @@ from app.routers import speech_ultra_simple
 from app.routers import image_recognition
 # 导入摘要服务路由
 from app.routers import summary
+# 导入导出功能路由
+from app.routers import export
 
 # 配置日志
 logging.basicConfig(
@@ -107,6 +109,8 @@ app.include_router(speech_ultra_simple.router, prefix="/api")
 app.include_router(image_recognition.router, prefix="/api")
 # 添加摘要服务路由
 app.include_router(summary.router, prefix="/api")
+# 添加导出功能路由
+app.include_router(export.router, prefix="/api")
 
 # 全局异常处理
 @app.exception_handler(RequestValidationError)
