@@ -1,6 +1,8 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import VideoUpload from '@/components/VideoUpload'
+import Link from 'next/link'
+import { CheckIcon } from '@heroicons/react/24/outline'
 
 export default function Home() {
     return (
@@ -57,6 +59,28 @@ export default function Home() {
                             <p className="text-gray-600 text-sm">
                                 支持 Markdown、PDF、HTML、TXT 等格式，一键批量导出
                             </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 免费试用横幅 */}
+                <div className="mb-12 max-w-4xl mx-auto">
+                    <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 text-center text-white">
+                        <h2 className="text-2xl font-bold mb-2">🎁 免费试用</h2>
+                        <p className="text-indigo-100 mb-6">注册即可获得 3 次免费视频分析机会，无需付费</p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <Link
+                                href="/register"
+                                className="bg-white text-indigo-600 font-semibold px-8 py-3 rounded-lg hover:bg-indigo-50 transition-colors"
+                            >
+                                立即免费试用
+                            </Link>
+                            <Link
+                                href="/pricing"
+                                className="border-2 border-white text-white font-semibold px-8 py-3 rounded-lg hover:bg-white hover:text-indigo-600 transition-colors"
+                            >
+                                查看定价方案
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -162,6 +186,161 @@ export default function Home() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* 定价预览 */}
+                <div className="mt-16 max-w-6xl mx-auto">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-4">选择适合你的套餐</h2>
+                        <p className="text-lg text-gray-600">从个人使用到专业需求，灵活的定价方案</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {/* 入门版 */}
+                        <div className="bg-white rounded-2xl p-8 shadow-lg border">
+                            <div className="text-center">
+                                <h3 className="text-xl font-semibold text-gray-900 mb-2">入门版</h3>
+                                <p className="text-gray-600 mb-6">适合个人用户的基础需求</p>
+                                <div className="mb-6">
+                                    <span className="text-4xl font-bold text-gray-900">$4.99</span>
+                                    <span className="text-gray-600">/月</span>
+                                </div>
+                            </div>
+                            <ul className="space-y-3 mb-8">
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>10分钟视频时长上限</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>本地文件上传</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>基础AI笔记生成</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>Markdown格式导出</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>5篇历史记录</span>
+                                </li>
+                            </ul>
+                            <Link
+                                href="/pricing"
+                                className="block w-full bg-gray-900 text-white text-center py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
+                            >
+                                选择入门版
+                            </Link>
+                        </div>
+
+                        {/* 标准版 */}
+                        <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-indigo-600 relative">
+                            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                                <span className="bg-indigo-600 text-white px-4 py-1 rounded-full text-sm font-medium">
+                                    最受欢迎
+                                </span>
+                            </div>
+                            <div className="text-center">
+                                <h3 className="text-xl font-semibold text-gray-900 mb-2">标准版</h3>
+                                <p className="text-gray-600 mb-6">功能全面的热门选择</p>
+                                <div className="mb-6">
+                                    <span className="text-4xl font-bold text-gray-900">$9.99</span>
+                                    <span className="text-gray-600">/月</span>
+                                </div>
+                            </div>
+                            <ul className="space-y-3 mb-8">
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>30分钟视频时长上限</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>本地上传 + 链接导入</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>精准AI语义摘要</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>1张关键帧图像提取</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>Markdown + PDF导出</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>30篇历史记录</span>
+                                </li>
+                            </ul>
+                            <Link
+                                href="/pricing"
+                                className="block w-full bg-indigo-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
+                            >
+                                选择标准版
+                            </Link>
+                        </div>
+
+                        {/* 高级版 */}
+                        <div className="bg-white rounded-2xl p-8 shadow-lg border">
+                            <div className="text-center">
+                                <h3 className="text-xl font-semibold text-gray-900 mb-2">高级版</h3>
+                                <p className="text-gray-600 mb-6">专业用户的完整解决方案</p>
+                                <div className="mb-6">
+                                    <span className="text-4xl font-bold text-gray-900">$19.99</span>
+                                    <span className="text-gray-600">/月</span>
+                                </div>
+                            </div>
+                            <ul className="space-y-3 mb-8">
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>90分钟视频时长上限</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>全平台导入支持</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>多风格智能笔记</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>3-5张关键帧提取</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>全格式导出 + Notion</span>
+                                </li>
+                                <li className="flex items-center text-sm">
+                                    <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                    <span>无限历史记录</span>
+                                </li>
+                            </ul>
+                            <Link
+                                href="/pricing"
+                                className="block w-full bg-gray-900 text-white text-center py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
+                            >
+                                选择高级版
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div className="text-center mt-8">
+                        <Link
+                            href="/pricing"
+                            className="inline-flex items-center text-indigo-600 font-semibold hover:text-indigo-700"
+                        >
+                            查看完整定价详情
+                            <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                        </Link>
                     </div>
                 </div>
             </main>

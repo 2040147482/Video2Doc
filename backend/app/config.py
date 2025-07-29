@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings
 from functools import lru_cache
 from typing import List
 import os
+from pydantic import Field
 
 
 class Settings(BaseSettings):
@@ -33,6 +34,10 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     google_api_key: str = ""
     perplexity_api_key: str = ""
+    
+    # Creem支付平台配置
+    creem_api_key: str = Field(default="", description="Creem API密钥")
+    creem_webhook_secret: str = Field(default="", description="Creem Webhook密钥")
     
     # 云存储配置（可选）
     aws_access_key_id: str = ""
