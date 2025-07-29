@@ -49,14 +49,14 @@ def run_test(test_script, timeout=120):
         success = result.returncode == 0
         
         if success:
-            print_color(f"✅ {script_name} 通过 ({duration:.2f}秒)", GREEN)
+            print_color(f"✅ {script_name} 测试通过 ({duration:.1f}s)", GREEN)
         else:
-            print_color(f"❌ {script_name} 失败 (返回码: {result.returncode}, {duration:.2f}秒)", RED)
+            print_color(f"❌ {script_name} 测试失败 ({duration:.1f}s)", RED)
         
         return success, duration
         
     except subprocess.TimeoutExpired:
-        print_color(f"⏰ {script_name} 超时 ({timeout}秒)", YELLOW)
+        print_color(f"⏰ {script_name} 测试超时 ({timeout}s)", YELLOW)
         return False, timeout
     except Exception as e:
         print_color(f"💥 {script_name} 执行异常: {str(e)}", RED)
@@ -94,6 +94,15 @@ def main():
         ("📤 视频上传测试", [
             "test_video_upload.py"
         ]),
+        ("☁️ 云存储测试", [
+            "test_simple_storage.py",
+            "test_cloud_storage.py",
+            "test_storage_api.py"
+        ]),
+        ("🔄 任务队列测试", [
+            "test_queue_simple.py",
+            "test_queue_system.py"
+        ]),
         ("🌐 API集成测试", [
             "test_api.py"
         ])
@@ -118,90 +127,80 @@ def main():
     all_results = []
     total_duration = 0
     
-    for category, scripts in test_categories.items():
-        print_color(f"\n{'='*60}", BLUE)
-        print_color(f"{category}", BLUE)
-        print_color(f"{'='*60}", BLUE)
+    for category, test_files in test_categories.items():
+        print_color(f"\n📋 {category}", CYAN)
+        print_color("-" * 60, CYAN)
         
         category_results = []
-        for script_name in scripts:
-            script_path = os.path.join(current_dir, script_name)
-            if os.path.exists(script_path):
-                success, duration = run_test(script_path)
-                category_results.append((script_name, success, duration))
+        for test_file in test_files:
+            test_path = os.path.join(current_dir, test_file)
+            if os.path.exists(test_path):
+                success, duration = run_test(test_path)
+                category_results.append((test_file, success, duration))
                 total_duration += duration
             else:
-                print_color(f"⚠️ 测试脚本不存在: {script_name}", YELLOW)
-                category_results.append((script_name, None, 0))
+                print_color(f"⚠️  测试文件不存在: {test_file}", YELLOW)
+                category_results.append((test_file, False, 0))
         
         all_results.extend(category_results)
+        
+        # 分类汇总
+        passed = sum(1 for _, success, _ in category_results if success)
+        total = len(category_results)
+        print_color(f"\n{category} 汇总: {passed}/{total} 通过", 
+                   GREEN if passed == total else YELLOW)
+    
+    # 总体汇总
+    print_color(f"\n{'='*60}", CYAN)
+    print_color("📊 总体测试结果汇总", CYAN)
+    print_color(f"{'='*60}", CYAN)
+    
+    total_tests = len(all_results)
+    passed_tests = sum(1 for _, success, _ in all_results if success)
+    
+    print_color(f"总测试数: {total_tests}", BLUE)
+    print_color(f"通过测试: {passed_tests}", GREEN)
+    print_color(f"失败测试: {total_tests - passed_tests}", RED)
+    print_color(f"成功率: {(passed_tests/total_tests)*100:.1f}%", 
+               GREEN if passed_tests == total_tests else YELLOW)
+    print_color(f"总耗时: {total_duration:.1f}s", BLUE)
+    
+    # 详细结果
+    print_color(f"\n📝 详细结果:", BLUE)
+    for test_file, success, duration in all_results:
+        status_icon = "✅" if success else "❌"
+        status_color = GREEN if success else RED
+        print_color(f"  {status_icon} {test_file:<30} ({duration:.1f}s)", status_color)
+    
+    # 失败测试列表
+    failed_tests = [test_file for test_file, success, _ in all_results if not success]
+    if failed_tests:
+        print_color(f"\n❌ 失败的测试:", RED)
+        for test_file in failed_tests:
+            print_color(f"  - {test_file}", RED)
+        
+        print_color(f"\n💡 建议:", YELLOW)
+        print_color("  1. 检查服务是否正常运行 (FastAPI, Redis等)", YELLOW)
+        print_color("  2. 确认测试环境配置正确", YELLOW)  
+        print_color("  3. 查看具体错误日志进行调试", YELLOW)
+    else:
+        print_color(f"\n🎉 所有测试通过！", GREEN)
     
     # 询问是否运行调试测试
-    print_color(f"\n{'='*60}", YELLOW)
-    print_color("🐛 调试测试 (可选)", YELLOW)
-    print_color(f"{'='*60}", YELLOW)
-    
-    try:
-        run_debug = input("是否运行调试测试? (y/N): ").lower() == 'y'
-        if run_debug:
-            for script_name in debug_tests:
-                script_path = os.path.join(current_dir, script_name)
-                if os.path.exists(script_path):
-                    success, duration = run_test(script_path)
-                    all_results.append((script_name, success, duration))
-                    total_duration += duration
-    except (KeyboardInterrupt, EOFError):
-        print_color("\n跳过调试测试", YELLOW)
-    
-    # 打印详细摘要
-    print_color(f"\n{'='*60}", CYAN)
-    print_color("📊 测试结果详细摘要", CYAN)
-    print_color(f"{'='*60}", CYAN)
-    
-    passed = 0
-    failed = 0
-    skipped = 0
-    
-    # 按类别显示结果
-    for category, scripts in test_categories.items():
-        print_color(f"\n{category}:", BLUE)
-        for script_name in scripts:
-            result_item = next((item for item in all_results if item[0] == script_name), None)
-            if result_item:
-                name, result, duration = result_item
-                if result is True:
-                    status = f"{GREEN}✅ 通过{RESET} ({duration:.2f}s)"
-                    passed += 1
-                elif result is False:
-                    status = f"{RED}❌ 失败{RESET} ({duration:.2f}s)"
-                    failed += 1
-                else:
-                    status = f"{YELLOW}⚠️ 跳过{RESET}"
-                    skipped += 1
-                print(f"  {name}: {status}")
-    
-    # 总体统计
-    print_color(f"\n{'='*60}", CYAN)
-    print_color(f"🎯 总体结果:", CYAN)
-    print_color(f"总测试数: {len(all_results)}", CYAN)
-    print_color(f"通过: {passed} | 失败: {failed} | 跳过: {skipped}", CYAN)
-    print_color(f"总耗时: {total_duration:.2f}秒", CYAN)
-    
-    if failed == 0 and passed > 0:
-        print_color(f"🎉 所有测试通过!", GREEN)
-    elif failed > 0:
-        print_color(f"⚠️ 有 {failed} 个测试失败", RED)
-    else:
-        print_color(f"⚠️ 没有成功运行的测试", YELLOW)
-    
-    print_color(f"{'='*60}", CYAN)
-    
-    return failed == 0 and passed > 0
+    if debug_tests:
+        print_color(f"\n🐛 调试测试 (默认跳过):", YELLOW)
+        for debug_test in debug_tests:
+            print_color(f"  - {debug_test}", YELLOW)
+        
+        run_debug = input(f"\n是否运行调试测试? (y/N): ").lower().strip()
+        if run_debug in ['y', 'yes']:
+            print_color(f"\n🔧 运行调试测试:", CYAN)
+            for debug_test in debug_tests:
+                debug_path = os.path.join(current_dir, debug_test)
+                if os.path.exists(debug_path):
+                    run_test(debug_path)
+
+    return 0 if passed_tests == total_tests else 1
 
 if __name__ == "__main__":
-    try:
-        success = main()
-        sys.exit(0 if success else 1)
-    except KeyboardInterrupt:
-        print_color("\n\n测试被用户中断", YELLOW)
-        sys.exit(130) 
+    sys.exit(main()) 

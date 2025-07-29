@@ -11,7 +11,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import get_settings
 from app.exceptions import create_error_response
-from app.routers import health, video, processing, speech, image_recognition, summary, export, storage
+from app.routers import health, video, processing, speech, image_recognition, summary, export, storage, queue
 
 # 配置日志
 logging.basicConfig(
@@ -89,6 +89,7 @@ app.include_router(image_recognition.router, prefix="/api")
 app.include_router(summary.router, prefix="/api")
 app.include_router(export.router, prefix="/api")
 app.include_router(storage.router, prefix="/api", tags=["存储管理"])
+app.include_router(queue.router, prefix="/api", tags=["队列管理"])
 
 # 全局异常处理
 @app.exception_handler(RequestValidationError)

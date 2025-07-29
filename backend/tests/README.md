@@ -40,6 +40,15 @@
 - `test_debug_with_logs.py` - 带日志的调试测试
 - `test_simple_debug.py` - 简单调试测试
 
+### ☁️ 云存储测试 (Cloud Storage Tests)
+- `test_cloud_storage.py` - 云存储本地适配器基础测试
+- `test_simple_storage.py` - 简化的云存储测试
+- `test_storage_api.py` - 存储API接口测试
+
+### 🔄 任务队列测试 (Queue Tests)
+- `test_queue_system.py` - 任务队列系统综合测试
+- `test_queue_simple.py` - 简化的任务队列测试
+
 ### 📂 测试资源 (Test Assets)
 - `test_assets/` - 包含测试用的音频、视频等资源文件
   - `test_audio.wav` - 测试音频文件
@@ -69,6 +78,12 @@ python test_speech.py
 
 # 图像识别测试
 python test_image_recognition.py
+
+# 云存储测试
+python test_storage_api.py
+
+# 任务队列测试
+python test_queue_simple.py
 ```
 
 ### 快速验证测试
@@ -77,6 +92,8 @@ python test_image_recognition.py
 python test_export_quick.py
 python test_summary_simple.py
 python test_speech_ultra_simple.py
+python test_simple_storage.py
+python test_queue_simple.py
 ```
 
 ## 📋 测试规范
@@ -108,6 +125,8 @@ python test_speech_ultra_simple.py
 | 语音识别 | test_speech.py | ✅ | 语音转文字已通过测试 |
 | 图像识别 | test_image_recognition.py | ✅ | 图像分析已通过测试 |
 | 视频上传 | test_video_upload.py | ✅ | 文件上传已通过测试 |
+| 云存储 | test_storage_api.py | ✅ | 云存储系统已通过测试 |
+| 任务队列 | test_queue_simple.py | ⏳ | 任务队列系统测试中 |
 | API接口 | test_api.py | ✅ | 基础API已通过测试 |
 
 ## 🎯 持续改进

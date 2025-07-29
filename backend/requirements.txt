@@ -14,6 +14,11 @@ aiofiles==23.2.1
 aiohttp==3.9.0
 asyncio
 
+# 任务队列
+celery==5.3.4
+redis==5.0.1
+kombu==5.3.4
+
 # 音频视频处理
 torch==2.0.1
 torchaudio==2.0.2
