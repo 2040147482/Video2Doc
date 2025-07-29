@@ -1,50 +1,44 @@
+# 基础依赖
 fastapi==0.104.1
-uvicorn==0.23.2
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
 pydantic==2.4.2
 pydantic-settings==2.0.3
-python-multipart==0.0.6
-python-dotenv==1.0.0
-httpx==0.25.0
-requests==2.31.0
-aiofiles==23.2.1
-aiohttp==3.8.6
 
-# 数据库
+# 数据库和存储
 sqlalchemy==2.0.23
 alembic==1.12.1
 
-# 异步任务队列
-redis==5.0.1
-celery==5.3.4
+# 异步支持
+aiofiles==23.2.1
+aiohttp==3.9.0
+asyncio
+
+# 音频视频处理
+torch==2.0.1
+torchaudio==2.0.2
+openai-whisper==20231117
 
 # AI服务
-openai==1.2.4
-# openai-whisper==20231117
-anthropic==0.7.0
+openai==1.3.5
+
+# 图像处理
 Pillow==10.1.0
+opencv-python==4.8.1.78
 
-# 语音识别
-ffmpeg-python==0.2.0
-torch==2.1.1
-torchaudio==2.1.1
+# 工具库
+numpy==1.26.4
+pandas==2.1.3
+requests==2.31.0
 
-# 日志
-loguru==0.7.2
+# 多格式导出
+reportlab==4.0.9
+zipfile36==0.1.3
 
-# 工具
-python-slugify==8.0.1
-python-dateutil==2.8.2
-
-# 测试
-pytest==7.4.3
-pytest-asyncio==0.21.1
+# 云存储支持（可选）
+aioboto3==12.3.0
+botocore>=1.31.0
 
 # 开发工具
-black==23.10.1
-flake8==6.1.0 
-
-# PDF generation
-reportlab==4.0.9
-
-# ZIP file handling
-zipfile36==0.1.3 
+pytest==7.4.3
+pytest-asyncio==0.21.1 

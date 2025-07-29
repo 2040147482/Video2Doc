@@ -11,21 +11,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import get_settings
 from app.exceptions import create_error_response
-from app.routers import health, video
-# 导入新的处理路由
-from app.routers import processing
-# 导入语音识别路由
-from app.routers import speech
-# 导入简化的语音识别路由（用于调试）
-from app.routers import speech_simple
-# 导入超级简化的语音识别路由（用于诊断）
-from app.routers import speech_ultra_simple
-# 导入图像识别路由
-from app.routers import image_recognition
-# 导入摘要服务路由
-from app.routers import summary
-# 导入导出功能路由
-from app.routers import export
+from app.routers import health, video, processing, speech, image_recognition, summary, export, storage
 
 # 配置日志
 logging.basicConfig(
@@ -43,12 +29,12 @@ async def lifespan(app: FastAPI):
     Args:
         app: FastAPI应用实例
     """
-    # 启动前执行
-    settings = get_settings()
-    logger.info(f"应用启动: {settings.app_name} v{settings.app_version}")
+    # 启动时执行
+    logger.info("应用启动: Video2Doc API v1.0.0")
     
     # 创建必要的目录
     from pathlib import Path
+    settings = get_settings()
     Path(settings.upload_dir).mkdir(exist_ok=True, parents=True)
     Path(settings.temp_dir).mkdir(exist_ok=True, parents=True)
     Path(settings.results_dir).mkdir(exist_ok=True, parents=True)
@@ -61,9 +47,9 @@ async def lifespan(app: FastAPI):
 # 创建应用
 app = FastAPI(
     title="Video2Doc API",
-    description="视频内容AI分析工具API",
-    version="0.1.0",
-    lifespan=lifespan,
+    description="AI驱动的视频内容分析和文档生成平台",
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # 请求日志中间件
@@ -96,21 +82,13 @@ app.add_middleware(
 
 # 注册路由 - 使用/api前缀
 app.include_router(health.router, prefix="/api")
-app.include_router(video.router)
-# 添加新的处理路由
+app.include_router(video.router, prefix="/api")
 app.include_router(processing.router, prefix="/api")
-# 添加语音识别路由
 app.include_router(speech.router, prefix="/api")
-# 添加简化的语音识别路由（用于调试）
-app.include_router(speech_simple.router, prefix="/api")
-# 添加超级简化的语音识别路由（用于诊断）
-app.include_router(speech_ultra_simple.router, prefix="/api")
-# 添加图像识别路由
 app.include_router(image_recognition.router, prefix="/api")
-# 添加摘要服务路由
 app.include_router(summary.router, prefix="/api")
-# 添加导出功能路由
 app.include_router(export.router, prefix="/api")
+app.include_router(storage.router, prefix="/api", tags=["存储管理"])
 
 # 全局异常处理
 @app.exception_handler(RequestValidationError)
