@@ -22,6 +22,8 @@ from app.routers import speech_simple
 from app.routers import speech_ultra_simple
 # 导入图像识别路由
 from app.routers import image_recognition
+# 导入摘要服务路由
+from app.routers import summary
 
 # 配置日志
 logging.basicConfig(
@@ -90,9 +92,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 注册路由
+# 注册路由 - 使用/api前缀
 app.include_router(health.router, prefix="/api")
-app.include_router(video.router, prefix="/api")
+app.include_router(video.router)
 # 添加新的处理路由
 app.include_router(processing.router, prefix="/api")
 # 添加语音识别路由
@@ -103,6 +105,8 @@ app.include_router(speech_simple.router, prefix="/api")
 app.include_router(speech_ultra_simple.router, prefix="/api")
 # 添加图像识别路由
 app.include_router(image_recognition.router, prefix="/api")
+# 添加摘要服务路由
+app.include_router(summary.router, prefix="/api")
 
 # 全局异常处理
 @app.exception_handler(RequestValidationError)

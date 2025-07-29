@@ -8,7 +8,7 @@ import hashlib
 from datetime import datetime
 
 from app.config import settings
-from app.exceptions import FileSizeExceededError, UnsupportedFileFormatError
+from app.exceptions import FileSizeLimitException, FileTypeException
 
 
 class FileService:
@@ -76,7 +76,7 @@ class FileService:
                     # 删除已保存的不完整文件
                     if file_path.exists():
                         file_path.unlink()
-                    raise FileSizeExceededError(file_info["size"], settings.max_file_size)
+                    raise FileSizeLimitException(f"文件大小 {file_info['size']} 字节超过限制 {settings.max_file_size} 字节")
                 
                 await f.write(chunk)
         
@@ -89,7 +89,7 @@ class FileService:
         """验证文件格式"""
         file_ext = Path(filename).suffix.lower()
         if file_ext not in supported_formats:
-            raise UnsupportedFileFormatError(file_ext)
+            raise FileTypeException(f"不支持的文件格式: {file_ext}")
     
     def get_file_info(self, file_path: Path) -> dict:
         """获取文件基本信息"""

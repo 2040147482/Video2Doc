@@ -7,7 +7,7 @@ from typing import Optional, Dict, Any
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
 
-from app.exceptions import InvalidVideoUrlError, VideoProcessingError
+from app.exceptions import VideoUploadException, VideoProcessingException
 
 
 class VideoService:
@@ -56,10 +56,10 @@ class VideoService:
             dict: 包含平台、视频ID等信息
             
         Raises:
-            InvalidVideoUrlError: URL无效或不支持的平台
+            VideoUploadException: URL无效或不支持的平台
         """
         if not url or not url.strip():
-            raise InvalidVideoUrlError("视频链接不能为空")
+            raise VideoUploadException("视频链接不能为空")
         
         url = url.strip()
         
@@ -90,14 +90,14 @@ class VideoService:
             for config in self.SUPPORTED_PLATFORMS.values():
                 supported_domains.extend(config["domains"])
             
-            raise InvalidVideoUrlError(
+            raise VideoUploadException(
                 f"暂不支持该视频平台。支持的平台：{', '.join(supported_domains)}"
             )
             
         except Exception as e:
-            if isinstance(e, InvalidVideoUrlError):
+            if isinstance(e, VideoUploadException):
                 raise
-            raise InvalidVideoUrlError(f"URL格式无效: {str(e)}")
+            raise VideoUploadException(f"URL格式无效: {str(e)}")
     
     async def is_valid_url(self, url: str) -> bool:
         """
@@ -196,7 +196,7 @@ class VideoService:
                 # 这里应该集成yt-dlp或其他工具提取音频
                 # 暂时返回错误
                 raise NotImplementedError("从视频平台提取音频功能尚未实现")
-            except InvalidVideoUrlError:
+            except VideoUploadException:
                 # 不是视频平台URL，直接下载
                 pass
             
@@ -204,14 +204,14 @@ class VideoService:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as response:
                     if response.status != 200:
-                        raise VideoProcessingError(f"下载失败，状态码: {response.status}")
+                        raise VideoProcessingException(f"下载失败，状态码: {response.status}")
                     
                     # 检查Content-Type
                     content_type = response.headers.get("Content-Type", "")
                     if not content_type.startswith(("audio/", "application/octet-stream")):
                         # 如果不是音频类型，但URL有效，尝试继续下载
                         if not await self.is_audio_url(url):
-                            raise VideoProcessingError(f"不是有效的音频文件: {content_type}")
+                            raise VideoProcessingException(f"不是有效的音频文件: {content_type}")
                     
                     # 下载文件
                     with open(file_path, "wb") as f:
@@ -230,9 +230,9 @@ class VideoService:
                 except:
                     pass
             
-            if isinstance(e, (InvalidVideoUrlError, VideoProcessingError, NotImplementedError)):
+            if isinstance(e, (VideoUploadException, VideoProcessingException, NotImplementedError)):
                 raise
-            raise VideoProcessingError(f"下载音频失败: {str(e)}")
+            raise VideoProcessingException(f"下载音频失败: {str(e)}")
     
     async def get_video_info(self, url: str) -> Dict[str, Any]:
         """

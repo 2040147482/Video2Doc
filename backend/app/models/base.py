@@ -3,7 +3,7 @@
 """
 
 from pydantic import BaseModel, Field, HttpUrl
-from typing import Optional, List, Literal
+from typing import Optional, List, Literal, Dict, Any, Union
 from datetime import datetime
 from enum import Enum
 
@@ -76,10 +76,9 @@ class HealthResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     """错误响应模型"""
-    error: str = Field(..., description="错误类型")
+    status_code: int = Field(..., description="HTTP状态码")
     message: str = Field(..., description="错误消息")
-    details: Optional[str] = Field(None, description="错误详情")
-    timestamp: datetime = Field(default_factory=datetime.now, description="错误时间")
+    details: Optional[Union[List[Dict[str, Any]], Dict[str, Any]]] = Field(None, description="错误详情")
 
 
 class VideoAnalysisResult(BaseModel):

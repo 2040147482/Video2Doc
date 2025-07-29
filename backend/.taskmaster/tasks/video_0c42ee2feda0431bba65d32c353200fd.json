@@ -1,0 +1,16 @@
+{
+  "task_id": "video_0c42ee2feda0431bba65d32c353200fd",
+  "type": "video",
+  "status": "completed",
+  "progress": 100.0,
+  "url": "https://example.com/video.mp4",
+  "output_format": "markdown",
+  "metadata": {
+    "title": "测试视频",
+    "duration": 180.5
+  },
+  "transcription_task_id": null,
+  "image_analysis_task_id": null,
+  "created_at": "2025-07-29T16:39:11.171911",
+  "updated_at": "2025-07-29T16:39:11.171911"
+}

@@ -9,11 +9,12 @@ from app.models.base import (
 )
 from app.config import Settings, get_settings
 from app.exceptions import (
-    FileUploadError,
-    FileSizeExceededError,
-    UnsupportedFileFormatError,
-    TaskNotFoundError,
-    InvalidVideoUrlError
+    VideoUploadException,
+    FileSizeLimitException,
+    FileTypeException,
+    SpeechRecognitionException,
+    ImageRecognitionException,
+    SummaryException
 )
 from app.services.file_service import file_service
 from app.services.video_service import video_service
@@ -22,7 +23,7 @@ from datetime import datetime
 from typing import Optional
 import os
 
-router = APIRouter(prefix="/api", tags=["Video Processing"])
+router = APIRouter(prefix="/video", tags=["Video Processing"])
 
 # 支持的视频格式
 SUPPORTED_VIDEO_FORMATS = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".flv", ".wmv"}
@@ -92,7 +93,7 @@ async def upload_video_file(
     try:
         # 验证文件基本信息
         if not file.filename:
-            raise FileUploadError("文件名不能为空")
+            raise VideoUploadException("文件名不能为空")
         
         # 验证文件格式
         file_service.validate_file_format(file.filename, SUPPORTED_VIDEO_FORMATS)
@@ -127,13 +128,13 @@ async def upload_video_file(
                 estimated_time=estimated_time
             )
             
-        except (FileSizeExceededError, UnsupportedFileFormatError):
+        except (FileSizeLimitException, FileTypeException):
             # 清理失败的任务记录
             if task_id in tasks_storage:
                 del tasks_storage[task_id]
             raise
             
-    except (FileUploadError, FileSizeExceededError, UnsupportedFileFormatError):
+    except (VideoUploadException, FileSizeLimitException, FileTypeException):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"文件上传失败: {str(e)}")
@@ -154,17 +155,17 @@ async def process_video_url(
     """
     try:
         if not request.video_url:
-            raise InvalidVideoUrlError("视频链接不能为空")
+            raise VideoUploadException("视频链接不能为空")
         
         url = str(request.video_url)
         
         # 验证并获取视频信息
         try:
             video_info = await video_service.get_video_info(url)
-        except InvalidVideoUrlError:
+        except VideoUploadException:
             raise
         except Exception as e:
-            raise InvalidVideoUrlError(f"获取视频信息失败: {str(e)}")
+            raise VideoUploadException(f"获取视频信息失败: {str(e)}")
         
         # 创建任务
         task_id = create_task(
@@ -196,7 +197,7 @@ async def process_video_url(
             estimated_time=estimated_time
         )
         
-    except InvalidVideoUrlError:
+    except VideoUploadException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"视频链接处理失败: {str(e)}")
@@ -210,7 +211,7 @@ async def get_task_status(task_id: str) -> TaskStatusResponse:
     - **task_id**: 任务ID
     """
     if task_id not in tasks_storage:
-        raise TaskNotFoundError(task_id)
+        raise HTTPException(status_code=404, detail=f"任务 {task_id} 未找到")
     
     task_data = tasks_storage[task_id]
     
@@ -249,7 +250,7 @@ async def get_all_tasks() -> list[TaskStatusResponse]:
 async def delete_task(task_id: str) -> dict:
     """删除指定任务及其相关文件"""
     if task_id not in tasks_storage:
-        raise TaskNotFoundError(task_id)
+        raise HTTPException(status_code=404, detail=f"任务 {task_id} 未找到")
     
     task_data = tasks_storage[task_id]
     
