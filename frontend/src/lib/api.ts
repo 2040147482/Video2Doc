@@ -98,6 +98,46 @@ export const api = {
         const response = await apiClient.get('/api/supported-formats')
         return response.data
     },
+
+    // === 导出相关API ===
+
+    // 创建导出任务
+    createExport: async (request: ExportRequest): Promise<ExportResponse> => {
+        const response = await apiClient.post('/api/export', request)
+        return response.data
+    },
+
+    // 获取导出状态
+    getExportStatus: async (exportId: string): Promise<ExportStatus> => {
+        const response = await apiClient.get(`/api/export/status/${exportId}`)
+        return response.data
+    },
+
+    // 取消导出任务
+    cancelExport: async (exportId: string): Promise<{ message: string }> => {
+        const response = await apiClient.delete(`/api/export/${exportId}`)
+        return response.data
+    },
+
+    // 下载导出文件
+    downloadExportFile: async (exportId: string, filename: string): Promise<Blob> => {
+        const response = await apiClient.get(`/api/export/download/${exportId}/${filename}`, {
+            responseType: 'blob'
+        })
+        return response.data
+    },
+
+    // 获取支持的导出格式
+    getExportFormats: async (): Promise<string[]> => {
+        const response = await apiClient.get('/api/export/formats')
+        return response.data
+    },
+
+    // 获取可用的导出模板
+    getExportTemplates: async (): Promise<string[]> => {
+        const response = await apiClient.get('/api/export/templates')
+        return response.data
+    },
 }
 
 // 类型定义
@@ -131,4 +171,36 @@ export interface SupportedFormatsResponse {
     video_platforms: string[]
     max_file_size: number
     max_file_size_mb: number
+}
+
+// === 导出相关类型定义 ===
+
+export interface ExportRequest {
+    task_id: string
+    formats: string[]
+    template: string
+    include_images: boolean
+    include_timestamps: boolean
+    include_metadata: boolean
+    custom_filename?: string
+}
+
+export interface ExportResponse {
+    export_id: string
+    status: string
+    message: string
+    download_urls?: Record<string, string>
+    expires_at?: string
+}
+
+export interface ExportStatus {
+    export_id: string
+    status: string
+    progress: number
+    message: string
+    formats_completed: string[]
+    download_urls?: Record<string, string>
+    error_details?: string
+    created_at: string
+    completed_at?: string
 } 
